@@ -1,8 +1,8 @@
-# LLM Wiki Codex Plugin Design
+# LLM Wiki Agentic Memory Design
 
 ## Goal
 
-Build this repository as a GitHub-publishable Codex plugin that turns Andrej Karpathy's LLM Wiki pattern into an Obsidian-backed agentic second brain. The larger goal is long-term memory for Codex: durable knowledge should compound across sessions, projects, sources, and conversations. The plugin should help Codex remember and reuse important context from curated raw sources and from normal conversation, without requiring the user to explicitly type a skill name, command name, or phrases like "save this to the wiki" for common memory moments.
+Build this repository as a GitHub-publishable, AI-agent-agnostic long-term memory system that turns Andrej Karpathy's LLM Wiki pattern into an Obsidian-backed agentic second brain. The larger goal is portable long-term memory for AI agents: durable knowledge should compound across sessions, projects, sources, conversations, and agent runtimes. The project should help agents remember and reuse important context from curated raw sources and from normal conversation, without requiring the user to explicitly type a skill name, command name, or phrases like "save this to the wiki" for common memory moments.
 
 ## Source Idea
 
@@ -12,29 +12,48 @@ Karpathy's LLM Wiki pattern has three layers:
 - Wiki: generated and maintained markdown pages that summarize, connect, and update knowledge over time.
 - Schema: instructions that tell the LLM how to ingest, query, lint, and maintain the wiki.
 
-This plugin will instantiate that pattern for Codex and Obsidian, while broadening "wiki" into a practical long-term memory substrate. The wiki is not only a publishing surface; it is the agent's externalized memory.
+This project will instantiate that pattern for AI agents and Obsidian, while broadening "wiki" into a practical long-term memory substrate. The wiki is not only a publishing surface; it is the agent's externalized memory.
 
 ## Product Definition
 
-`llm-wiki` is an agentic second brain for Codex.
+`llm-wiki` is an agentic second brain for AI agents.
 
-The plugin has two equally important jobs:
+The project has two equally important jobs:
 
 - Remember: detect, structure, link, and store durable knowledge from sources and conversations.
 - Recall: consult the stored memory before answering, planning, or making decisions when prior context is likely relevant.
 
-The user experience should feel like working with an assistant that gradually learns the user's projects, preferences, vocabulary, open questions, and accumulated research. Obsidian is the inspectable memory interface: the user can browse, edit, audit, and visualize what Codex remembers.
+The user experience should feel like working with an assistant that gradually learns the user's projects, preferences, vocabulary, open questions, and accumulated research. Obsidian is the inspectable memory interface: the user can browse, edit, audit, and visualize what the AI remembers.
 
-This is not general hidden model memory. The memory is explicit markdown in the user's vault.
+This is not hidden model memory. The memory is explicit markdown in the user's vault and should be portable across Codex, Claude, and other capable AI agents.
+
+## Architecture Principle
+
+The project separates memory semantics from agent-specific integration.
+
+- Core memory system: vault layout, markdown schemas, memory lifecycle, safety policy, scripts, templates, and verification.
+- Agent adapters: instructions and packaging for specific runtimes such as Codex, Claude, and future agents.
+- Agent profiles: small capability descriptions that tune behavior for a model/runtime without changing the core memory format.
+
+The core memory should remain stable even when agent tooling changes. Adapters may differ in how they invoke skills, commands, instructions, hooks, or context files, but they should read and write the same Obsidian vault format.
 
 ## Repository Shape
 
-The repository root is the plugin root. This keeps GitHub distribution simple: cloning or installing the repository gives Codex the plugin manifest and all bundled skills directly.
+The repository root is the project root. It should also remain installable as a Codex plugin by keeping `.codex-plugin/plugin.json` at the root. Other agent integrations live as adapters and templates rather than forcing the whole project to be Codex-specific.
 
 Planned structure:
 
 ```text
 .codex-plugin/plugin.json
+adapters/
+  claude/
+    CLAUDE.llm-wiki.md
+  generic/
+    AI_MEMORY.md
+agent-profiles/
+  codex.md
+  claude.md
+  generic.md
 skills/
   llm-wiki/SKILL.md
   llm-wiki-bootstrap/SKILL.md
@@ -46,13 +65,15 @@ scripts/
   search_wiki.py
 templates/
   AGENTS.llm-wiki.md
+  CLAUDE.llm-wiki.md
+  AI_MEMORY.md
   obsidian-vault/
 README.md
 ```
 
-## Plugin Manifest
+## Codex Plugin Manifest
 
-The manifest will declare:
+The Codex manifest will declare:
 
 - `name`: `llm-wiki`
 - `skills`: `./skills/`
@@ -63,9 +84,55 @@ The manifest will declare:
 
 The manifest should not require network services or authentication. All core behavior is local filesystem work over markdown files.
 
+The Codex plugin is the first-class local integration for this repository, but not the conceptual boundary of the project.
+
+## Agent Adapters
+
+Adapters translate the same memory system into each agent's native instruction style.
+
+### Codex Adapter
+
+The Codex adapter uses:
+
+- `.codex-plugin/plugin.json` for plugin discovery
+- `skills/` for natural invocation inside Codex
+- `AGENTS.llm-wiki.md` as a reusable project instruction template
+
+### Claude Adapter
+
+The Claude adapter should provide:
+
+- a `CLAUDE.llm-wiki.md` template that can be copied or merged into a Claude-facing instruction file
+- workflow guidance that avoids assuming Codex-specific tools
+- the same memory lifecycle, vault layout, and safety rules as the Codex adapter
+
+### Generic Adapter
+
+The generic adapter should provide:
+
+- `AI_MEMORY.md`, a portable instruction file for agents that can read/write local files
+- a compact description of the memory lifecycle
+- minimum capabilities required for an agent to use the vault responsibly
+
+## Agent Profiles
+
+Different AI agents and models have different strengths, context windows, filesystem access, tool calling behavior, and instruction-following quirks. The project should model those differences with agent profiles rather than forking the memory format.
+
+Each profile should state:
+
+- supported file access and write behavior
+- preferred instruction entrypoint
+- context budget and recall budget guidance
+- whether the agent can run scripts directly
+- how proactive ambient capture should be
+- when confirmation is required before writing memory
+- known limitations or failure modes
+
+Profiles tune behavior. They must not redefine what memory means.
+
 ## Natural Invocation Strategy
 
-Codex skill invocation is driven mainly by skill metadata and instruction wording. The plugin therefore needs a broad, high-signal primary skill description.
+Codex skill invocation is driven mainly by skill metadata and instruction wording, while other agents may rely on instruction files, commands, or project memory files. The project therefore needs both broad Codex skill descriptions and portable natural-language instructions for other agents.
 
 `llm-wiki` should trigger for natural requests such as:
 
@@ -73,20 +140,20 @@ Codex skill invocation is driven mainly by skill metadata and instruction wordin
 - working with Obsidian vaults
 - processing notes, papers, articles, clips, meeting notes, transcripts, or source folders into a wiki
 - asking questions against an existing personal wiki or research wiki
-- asking Codex to remember, recall, learn, keep track of, or use prior context
+- asking the AI to remember, recall, learn, keep track of, or use prior context
 - updating `index.md`, `log.md`, cross-links, entity pages, concept pages, synthesis pages, or source summaries
 - checking wiki health, contradictions, stale claims, missing links, and orphan pages
 - discussing a topic over multiple turns where stable decisions, definitions, research findings, preferences, or open questions emerge
 
-The primary skill must route to the right workflow without requiring users to type command names.
+The primary workflow must route to the right behavior without requiring users to type command names.
 
-The intended feel is ambient rather than command-driven. The user should be able to talk normally, and Codex should notice when the conversation has produced durable knowledge worth adding to the wiki.
+The intended feel is ambient rather than command-driven. The user should be able to talk normally, and the AI should notice when the conversation has produced durable knowledge worth adding to the wiki.
 
-Codex skills are not background daemons, so the plugin cannot watch every conversation outside the active Codex turn. Within an active conversation, however, the skill should behave like a quiet wiki maintainer: detect durable knowledge, decide whether it belongs in the vault, and either update the wiki directly or make a brief confirmation request when the edit could be surprising.
+Agent integrations are not background daemons by default, so the project cannot watch every conversation outside an active agent session unless a future runtime explicitly supports that. Within an active conversation, however, the agent should behave like a quiet memory maintainer: detect durable knowledge, decide whether it belongs in the vault, and either update the wiki directly or make a brief confirmation request when the edit could be surprising.
 
 ## Ambient Capture Policy
 
-The plugin will include an ambient capture mode in the primary `llm-wiki` skill.
+The project will include ambient capture in the primary `llm-wiki` workflow. In Codex this is expressed as a skill; in other agents it is expressed through their adapter instructions.
 
 Capture candidates:
 
@@ -107,17 +174,17 @@ Do not capture:
 
 Default write behavior:
 
-- For low-risk durable notes, Codex may update the wiki without asking first, then briefly mention what changed.
-- For ambiguous, sensitive, personal, or high-volume updates, Codex must ask before writing.
-- For conflicting claims, Codex must preserve the conflict explicitly instead of overwriting the older claim.
-- For early brainstorming, Codex should wait until decisions stabilize, then capture the decision and alternatives.
-- For repeated conversational work on the same topic, Codex should update existing pages rather than creating duplicate pages.
+- For low-risk durable notes, the agent may update the wiki without asking first, then briefly mention what changed.
+- For ambiguous, sensitive, personal, or high-volume updates, the agent must ask before writing.
+- For conflicting claims, the agent must preserve the conflict explicitly instead of overwriting the older claim.
+- For early brainstorming, the agent should wait until decisions stabilize, then capture the decision and alternatives.
+- For repeated conversational work on the same topic, the agent should update existing pages rather than creating duplicate pages.
 
-This creates a "soft automatic" model: the plugin acts naturally and proactively, but it still respects user agency and avoids surprising writes.
+This creates a "soft automatic" model: the active agent acts naturally and proactively, but still respects user agency and avoids surprising writes.
 
 ## Memory Model
 
-The plugin will treat the Obsidian vault as a typed memory system.
+The project will treat the Obsidian vault as a typed memory system.
 
 Memory types:
 
@@ -133,16 +200,16 @@ Each memory page should make provenance explicit. A page should distinguish betw
 
 - user-stated information
 - source-backed claims
-- Codex inference
+- agent inference
 - unresolved or low-confidence interpretation
 
-When confidence is low, Codex should either mark the memory as tentative or ask before storing it.
+When confidence is low, the agent should either mark the memory as tentative or ask before storing it.
 
 ## Recall Policy
 
-Long-term memory is only useful if Codex recalls it.
+Long-term memory is only useful if the agent recalls it.
 
-Before answering or acting, `llm-wiki` should check memory when the current conversation appears related to:
+Before answering or acting, `llm-wiki` should guide the active agent to check memory when the current conversation appears related to:
 
 - an existing project, person, organization, topic, or research thread in the vault
 - a prior user preference or convention
@@ -162,7 +229,7 @@ The agent should not over-recall. For simple unrelated tasks, it should stay lig
 
 ## Memory Lifecycle
 
-The plugin should support a memory lifecycle, not just one-off note writing.
+The project should support a memory lifecycle, not just one-off note writing.
 
 1. Observe: notice durable information in sources or conversation.
 2. Triage: decide whether it is worth remembering, should be ignored, or needs confirmation.
@@ -174,7 +241,9 @@ The plugin should support a memory lifecycle, not just one-off note writing.
 
 This lifecycle keeps the vault from becoming a dumping ground of chat summaries.
 
-## Skills
+## Codex Skills
+
+These skills are the Codex adapter's implementation of the agent-agnostic memory system.
 
 ### `llm-wiki`
 
@@ -197,12 +266,12 @@ Use when creating or initializing a new LLM Wiki/Obsidian vault. It should:
 
 - create the default folder layout
 - create starter `index.md`, `log.md`, and overview pages
-- install a Codex-oriented schema/instructions file
+- install an agent-facing schema/instructions file plus any adapter-specific instructions
 - optionally create Obsidian configuration templates that are safe to copy into a vault
 
 ### `llm-wiki-recall`
 
-Use when the user asks Codex to remember, recall, use prior context, continue a thread, or make a decision that may depend on long-term memory. It should:
+Use when the user asks the AI to remember, recall, use prior context, continue a thread, or make a decision that may depend on long-term memory. It should:
 
 - find relevant memory pages before answering
 - distinguish current conversation context from recalled vault context
@@ -250,8 +319,8 @@ meta/
 
 Rules:
 
-- `raw/` is user-owned and immutable to Codex except when explicitly asked to add imported files.
-- `wiki/` is LLM-owned and can be created or updated by Codex.
+- `raw/` is user-owned and immutable to agents except when explicitly asked to add imported files.
+- `wiki/` is AI-owned and can be created or updated by agents following the memory policy.
 - `meta/` stores conventions, schemas, and optional prompts.
 - Use Obsidian `[[wikilinks]]` for internal references.
 - Use relative markdown links only when linking to raw source files or assets.
@@ -279,57 +348,57 @@ Checks wiki health. It should report missing required files, broken wikilinks, o
 Bootstrap:
 
 1. User asks to create or initialize an LLM Wiki/Obsidian vault.
-2. Codex runs the bootstrap workflow.
-3. The plugin creates folders, starter wiki files, and schema instructions.
-4. Codex summarizes what was created and how to open it in Obsidian.
+2. The active agent runs the bootstrap workflow.
+3. The project creates folders, starter wiki files, and schema instructions.
+4. The active agent summarizes what was created and how to open it in Obsidian.
 
 Ingest:
 
-1. User points Codex at a raw source file or folder.
-2. Codex reads the source without modifying it.
-3. Codex extracts key claims, entities, concepts, and contradictions.
-4. Codex creates or updates source summary, entity, concept, and synthesis pages.
-5. Codex updates `wiki/index.md`.
-6. Codex appends a `wiki/log.md` entry.
+1. User points the active agent at a raw source file or folder.
+2. The active agent reads the source without modifying it.
+3. The active agent extracts key claims, entities, concepts, and contradictions.
+4. The active agent creates or updates source summary, entity, concept, and synthesis pages.
+5. The active agent updates `wiki/index.md`.
+6. The active agent appends a `wiki/log.md` entry.
 
 Query:
 
-1. Codex reads `wiki/index.md` first.
-2. Codex searches or opens relevant wiki pages.
-3. Codex answers with citations to wiki/source pages.
-4. If the answer is durable, Codex offers or creates a page under `wiki/questions/` or `wiki/syntheses/`.
+1. The active agent reads `wiki/index.md` first.
+2. The active agent searches or opens relevant wiki pages.
+3. The active agent answers with citations to wiki/source pages.
+4. If the answer is durable, the active agent offers or creates a page under `wiki/questions/` or `wiki/syntheses/`.
 
 Recall:
 
 1. User asks something where prior memory may matter, or the active conversation resembles an existing memory thread.
-2. Codex reads the index, recent log entries, and targeted memory pages.
-3. Codex uses recalled preferences, procedures, prior decisions, source-backed claims, or open loops to shape the response.
-4. Codex updates memory only if the conversation adds or changes durable context.
+2. The active agent reads the index, recent log entries, and targeted memory pages.
+3. The active agent uses recalled preferences, procedures, prior decisions, source-backed claims, or open loops to shape the response.
+4. The active agent updates memory only if the conversation adds or changes durable context.
 
 Maintenance:
 
-1. Codex reads index, log, and wiki page graph.
-2. Codex reports health findings.
-3. When asked, Codex repairs links, index entries, metadata, and stale summaries.
-4. Codex logs the maintenance pass.
+1. The active agent reads index, log, and wiki page graph.
+2. The active agent reports health findings.
+3. When asked, the active agent repairs links, index entries, metadata, and stale summaries.
+4. The active agent logs the maintenance pass.
 
 Ambient capture:
 
 1. User discusses a topic naturally without asking for a wiki operation.
-2. Codex detects durable knowledge using the ambient capture policy.
-3. Codex checks `wiki/index.md` and likely target pages.
-4. Codex updates an existing page or creates a focused page only when the knowledge is stable enough.
-5. Codex updates `wiki/index.md` when a page is created or materially changed.
-6. Codex appends a compact `wiki/log.md` entry for the capture.
-7. Codex returns to the main conversation with a short note such as "I also captured the finalized convention in `wiki/concepts/...`."
+2. The active agent detects durable knowledge using the ambient capture policy.
+3. The active agent checks `wiki/index.md` and likely target pages.
+4. The active agent updates an existing page or creates a focused page only when the knowledge is stable enough.
+5. The active agent updates `wiki/index.md` when a page is created or materially changed.
+6. The active agent appends a compact `wiki/log.md` entry for the capture.
+7. The active agent returns to the main conversation with a short note such as "I also captured the finalized convention in `wiki/concepts/...`."
 
 Consolidation:
 
-1. Codex reviews recent episodic memory and log entries.
-2. Codex identifies durable patterns, decisions, or preferences.
-3. Codex merges them into semantic, procedural, preference, open-loop, or synthesis pages.
-4. Codex marks the source episode as consolidated instead of deleting it.
-5. Codex logs the consolidation pass.
+1. The active agent reviews recent episodic memory and log entries.
+2. The active agent identifies durable patterns, decisions, or preferences.
+3. The active agent merges them into semantic, procedural, preference, open-loop, or synthesis pages.
+4. The active agent marks the source episode as consolidated instead of deleting it.
+5. The active agent logs the consolidation pass.
 
 ## Error Handling
 
@@ -367,4 +436,4 @@ Minimum verification before completion:
 - network sync
 - hosted service or authentication
 
-These can be added later without changing the core plugin shape.
+These can be added later without changing the core memory shape.
