@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
 SCHEMA_VERSION = "0.1"
 SUPPORTED_BACKENDS = {"markdown-files", "obsidian"}
+_FRONTMATTER_RE = re.compile(r"\A---[ \t]*\r?\n(?:.*\r?\n)*?---[ \t]*(?:\r?\n|\Z)")
 
 MEMORY_DIRS = [
     "memory/sources",
@@ -48,7 +50,9 @@ class StoreConfig:
 
 
 def slugify(value: str) -> str:
-    slug = re.sub(r"[^a-zA-Z0-9]+", "-", value.strip().lower()).strip("-")
+    normalized = unicodedata.normalize("NFKC", value.strip().casefold())
+    slug = re.sub(r"[^\w]+", "-", normalized, flags=re.UNICODE)
+    slug = re.sub(r"[-_]+", "-", slug).strip("-")
     return slug or "memory"
 
 
@@ -92,7 +96,7 @@ def dump_config(config: StoreConfig) -> str:
 
 
 def iter_markdown_files(root: Path, include_raw: bool = False) -> Iterable[Path]:
-    roots = [root / "memory", root / "meta"]
+    roots = [root / "memory"]
     if include_raw:
         roots.append(root / "raw")
     for base in roots:
@@ -104,4 +108,4 @@ def iter_markdown_files(root: Path, include_raw: bool = False) -> Iterable[Path]
 
 
 def has_frontmatter(text: str) -> bool:
-    return text.startswith("---\n") and "\n---\n" in text[4:]
+    return _FRONTMATTER_RE.match(text) is not None
