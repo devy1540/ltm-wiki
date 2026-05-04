@@ -2,7 +2,7 @@
 
 ## Goal
 
-Build this repository as a GitHub-publishable Codex plugin that turns Andrej Karpathy's LLM Wiki pattern into a reusable Obsidian-first workflow. The plugin should help Codex maintain a persistent markdown wiki from curated raw sources and from durable insights that emerge in normal conversation, without requiring the user to explicitly type a skill name, command name, or phrases like "save this to the wiki" for common knowledge-capture moments.
+Build this repository as a GitHub-publishable Codex plugin that turns Andrej Karpathy's LLM Wiki pattern into an Obsidian-backed agentic second brain. The larger goal is long-term memory for Codex: durable knowledge should compound across sessions, projects, sources, and conversations. The plugin should help Codex remember and reuse important context from curated raw sources and from normal conversation, without requiring the user to explicitly type a skill name, command name, or phrases like "save this to the wiki" for common memory moments.
 
 ## Source Idea
 
@@ -12,7 +12,20 @@ Karpathy's LLM Wiki pattern has three layers:
 - Wiki: generated and maintained markdown pages that summarize, connect, and update knowledge over time.
 - Schema: instructions that tell the LLM how to ingest, query, lint, and maintain the wiki.
 
-This plugin will instantiate that pattern for Codex and Obsidian.
+This plugin will instantiate that pattern for Codex and Obsidian, while broadening "wiki" into a practical long-term memory substrate. The wiki is not only a publishing surface; it is the agent's externalized memory.
+
+## Product Definition
+
+`llm-wiki` is an agentic second brain for Codex.
+
+The plugin has two equally important jobs:
+
+- Remember: detect, structure, link, and store durable knowledge from sources and conversations.
+- Recall: consult the stored memory before answering, planning, or making decisions when prior context is likely relevant.
+
+The user experience should feel like working with an assistant that gradually learns the user's projects, preferences, vocabulary, open questions, and accumulated research. Obsidian is the inspectable memory interface: the user can browse, edit, audit, and visualize what Codex remembers.
+
+This is not general hidden model memory. The memory is explicit markdown in the user's vault.
 
 ## Repository Shape
 
@@ -25,6 +38,7 @@ Planned structure:
 skills/
   llm-wiki/SKILL.md
   llm-wiki-bootstrap/SKILL.md
+  llm-wiki-recall/SKILL.md
   llm-wiki-maintenance/SKILL.md
 scripts/
   init_vault.py
@@ -44,7 +58,7 @@ The manifest will declare:
 - `skills`: `./skills/`
 - category: `Productivity`
 - capabilities: `Read`, `Write`, `Interactive`
-- keywords around `obsidian`, `wiki`, `pkm`, `markdown`, `knowledge-base`, `research`, and `notes`
+- keywords around `obsidian`, `wiki`, `pkm`, `markdown`, `knowledge-base`, `research`, `notes`, `memory`, `second-brain`, and `long-term-memory`
 - starter prompts for ingesting a source, bootstrapping a vault, and health-checking a wiki
 
 The manifest should not require network services or authentication. All core behavior is local filesystem work over markdown files.
@@ -59,6 +73,7 @@ Codex skill invocation is driven mainly by skill metadata and instruction wordin
 - working with Obsidian vaults
 - processing notes, papers, articles, clips, meeting notes, transcripts, or source folders into a wiki
 - asking questions against an existing personal wiki or research wiki
+- asking Codex to remember, recall, learn, keep track of, or use prior context
 - updating `index.md`, `log.md`, cross-links, entity pages, concept pages, synthesis pages, or source summaries
 - checking wiki health, contradictions, stale claims, missing links, and orphan pages
 - discussing a topic over multiple turns where stable decisions, definitions, research findings, preferences, or open questions emerge
@@ -100,16 +115,76 @@ Default write behavior:
 
 This creates a "soft automatic" model: the plugin acts naturally and proactively, but it still respects user agency and avoids surprising writes.
 
+## Memory Model
+
+The plugin will treat the Obsidian vault as a typed memory system.
+
+Memory types:
+
+- Source memory: facts and claims extracted from immutable raw sources.
+- Semantic memory: durable concepts, entities, definitions, relationships, and summaries.
+- Episodic memory: compact records of meaningful conversations, decisions, and turning points.
+- Procedural memory: workflows, conventions, recurring processes, and how the user prefers work to be done.
+- Preference memory: stable user preferences, style choices, defaults, and dislikes.
+- Open-loop memory: unresolved questions, hypotheses, contradictions, TODOs, and follow-up source ideas.
+- Synthesis memory: higher-level conclusions, theses, comparisons, and patterns that emerge across sources or conversations.
+
+Each memory page should make provenance explicit. A page should distinguish between:
+
+- user-stated information
+- source-backed claims
+- Codex inference
+- unresolved or low-confidence interpretation
+
+When confidence is low, Codex should either mark the memory as tentative or ask before storing it.
+
+## Recall Policy
+
+Long-term memory is only useful if Codex recalls it.
+
+Before answering or acting, `llm-wiki` should check memory when the current conversation appears related to:
+
+- an existing project, person, organization, topic, or research thread in the vault
+- a prior user preference or convention
+- an open question or unresolved decision
+- a source-backed topic that has already been ingested
+- a repeated workflow where procedural memory may apply
+
+Recall flow:
+
+1. Read `wiki/index.md` and recent `wiki/log.md` entries.
+2. Search likely memory pages with `scripts/search_wiki.py` when available.
+3. Open the smallest useful set of pages.
+4. Use recalled context in the answer or plan.
+5. Mention recalled context only when it materially affects the response or when transparency is useful.
+
+The agent should not over-recall. For simple unrelated tasks, it should stay lightweight.
+
+## Memory Lifecycle
+
+The plugin should support a memory lifecycle, not just one-off note writing.
+
+1. Observe: notice durable information in sources or conversation.
+2. Triage: decide whether it is worth remembering, should be ignored, or needs confirmation.
+3. Store: write a concise memory entry with type, provenance, links, and confidence.
+4. Link: connect it to relevant concepts, entities, projects, sources, and open loops.
+5. Recall: use it in later relevant conversations.
+6. Consolidate: periodically merge episodic notes into semantic, procedural, or synthesis pages.
+7. Prune: flag stale, superseded, duplicate, or low-value memory during maintenance.
+
+This lifecycle keeps the vault from becoming a dumping ground of chat summaries.
+
 ## Skills
 
 ### `llm-wiki`
 
-Primary always-on wiki maintainer workflow. It should:
+Primary second-brain workflow. It should:
 
 - detect or ask for the vault root only when it cannot infer one
 - read `AGENTS.md`, `AGENTS.llm-wiki.md`, `wiki/index.md`, and recent `wiki/log.md` entries when present
-- classify the user request or conversation state as bootstrap, ingest, query, maintenance, schema update, or ambient capture
+- classify the user request or conversation state as bootstrap, ingest, recall, query, maintenance, schema update, or ambient capture
 - monitor the active conversation for durable knowledge that should compound into the wiki
+- recall existing memory when it is likely relevant to the user's current task
 - preserve raw sources as immutable input
 - write generated knowledge only into the wiki layer
 - maintain Obsidian wikilinks and Dataview-friendly frontmatter
@@ -124,6 +199,16 @@ Use when creating or initializing a new LLM Wiki/Obsidian vault. It should:
 - create starter `index.md`, `log.md`, and overview pages
 - install a Codex-oriented schema/instructions file
 - optionally create Obsidian configuration templates that are safe to copy into a vault
+
+### `llm-wiki-recall`
+
+Use when the user asks Codex to remember, recall, use prior context, continue a thread, or make a decision that may depend on long-term memory. It should:
+
+- find relevant memory pages before answering
+- distinguish current conversation context from recalled vault context
+- cite or name the memory pages that materially influenced the answer
+- avoid loading the entire vault when targeted recall is enough
+- update open-loop or episodic memory if the conversation resolves or changes prior context
 
 ### `llm-wiki-maintenance`
 
@@ -149,6 +234,11 @@ wiki/
   log.md
   overview.md
   sources/
+  memory/
+    episodes/
+    preferences/
+    procedures/
+    open-loops/
   entities/
   concepts/
   syntheses/
@@ -166,6 +256,7 @@ Rules:
 - Use Obsidian `[[wikilinks]]` for internal references.
 - Use relative markdown links only when linking to raw source files or assets.
 - Prefer YAML frontmatter on wiki pages with fields such as `type`, `status`, `created`, `updated`, `sources`, `tags`, and `aliases`.
+- Memory pages should also include `confidence`, `provenance`, and `last_reviewed` when relevant.
 - `wiki/index.md` is content-oriented and should be updated after ingest or major edits.
 - `wiki/log.md` is chronological and append-only with parseable headings like `## [2026-05-04] ingest | Title`.
 
@@ -208,6 +299,13 @@ Query:
 3. Codex answers with citations to wiki/source pages.
 4. If the answer is durable, Codex offers or creates a page under `wiki/questions/` or `wiki/syntheses/`.
 
+Recall:
+
+1. User asks something where prior memory may matter, or the active conversation resembles an existing memory thread.
+2. Codex reads the index, recent log entries, and targeted memory pages.
+3. Codex uses recalled preferences, procedures, prior decisions, source-backed claims, or open loops to shape the response.
+4. Codex updates memory only if the conversation adds or changes durable context.
+
 Maintenance:
 
 1. Codex reads index, log, and wiki page graph.
@@ -225,6 +323,14 @@ Ambient capture:
 6. Codex appends a compact `wiki/log.md` entry for the capture.
 7. Codex returns to the main conversation with a short note such as "I also captured the finalized convention in `wiki/concepts/...`."
 
+Consolidation:
+
+1. Codex reviews recent episodic memory and log entries.
+2. Codex identifies durable patterns, decisions, or preferences.
+3. Codex merges them into semantic, procedural, preference, open-loop, or synthesis pages.
+4. Codex marks the source episode as consolidated instead of deleting it.
+5. Codex logs the consolidation pass.
+
 ## Error Handling
 
 - If no vault is detected, ask for or infer a target directory before writing.
@@ -234,6 +340,9 @@ Ambient capture:
 - If a file has user-authored content in a wiki page, update conservatively and avoid deleting information unless the user asks.
 - If ambient capture would interrupt a time-sensitive coding task, defer the capture until the task has a natural pause.
 - If the user rejects an ambient capture suggestion, do not ask again for the same content.
+- If recalled memory conflicts with current user instructions, current instructions win and the conflict should be noted or updated.
+- If memory provenance is unclear, treat it as low-confidence context instead of fact.
+- If memory starts to accumulate noisy chat summaries, maintenance should consolidate or mark them for pruning.
 
 ## Testing And Verification
 
@@ -245,6 +354,8 @@ Minimum verification before completion:
 - run `scripts/wiki_doctor.py` against the generated sample vault
 - run `scripts/search_wiki.py` against the generated sample vault
 - manually inspect generated markdown for Obsidian wikilinks and parseable log headings
+- verify that sample memory pages include provenance and confidence metadata
+- verify that recall instructions prefer targeted memory lookup over loading the whole vault
 
 ## Out Of Scope For First Version
 
