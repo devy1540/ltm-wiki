@@ -2,7 +2,7 @@
 
 ## Goal
 
-Build this repository as a GitHub-publishable Codex plugin that turns Andrej Karpathy's LLM Wiki pattern into a reusable Obsidian-first workflow. The plugin should help Codex naturally maintain a persistent markdown wiki from curated raw sources, without requiring the user to explicitly type a skill or command name for common wiki tasks.
+Build this repository as a GitHub-publishable Codex plugin that turns Andrej Karpathy's LLM Wiki pattern into a reusable Obsidian-first workflow. The plugin should help Codex maintain a persistent markdown wiki from curated raw sources and from durable insights that emerge in normal conversation, without requiring the user to explicitly type a skill name, command name, or phrases like "save this to the wiki" for common knowledge-capture moments.
 
 ## Source Idea
 
@@ -61,8 +61,44 @@ Codex skill invocation is driven mainly by skill metadata and instruction wordin
 - asking questions against an existing personal wiki or research wiki
 - updating `index.md`, `log.md`, cross-links, entity pages, concept pages, synthesis pages, or source summaries
 - checking wiki health, contradictions, stale claims, missing links, and orphan pages
+- discussing a topic over multiple turns where stable decisions, definitions, research findings, preferences, or open questions emerge
 
 The primary skill must route to the right workflow without requiring users to type command names.
+
+The intended feel is ambient rather than command-driven. The user should be able to talk normally, and Codex should notice when the conversation has produced durable knowledge worth adding to the wiki.
+
+Codex skills are not background daemons, so the plugin cannot watch every conversation outside the active Codex turn. Within an active conversation, however, the skill should behave like a quiet wiki maintainer: detect durable knowledge, decide whether it belongs in the vault, and either update the wiki directly or make a brief confirmation request when the edit could be surprising.
+
+## Ambient Capture Policy
+
+The plugin will include an ambient capture mode in the primary `llm-wiki` skill.
+
+Capture candidates:
+
+- user preferences, conventions, or durable project decisions
+- stable definitions, concepts, entities, and relationships
+- research findings or source-backed claims
+- conclusions from analysis that are likely to be useful later
+- unresolved questions, TODOs, hypotheses, contradictions, and follow-up source ideas
+- summaries of long conversations that would otherwise be lost in chat history
+
+Do not capture:
+
+- throwaway brainstorming fragments that the user has not settled on
+- sensitive personal data unless the user explicitly asks to keep it
+- secrets, credentials, private keys, tokens, or auth material
+- transient task mechanics such as "run tests now" or "fix this typo"
+- content the user explicitly says not to remember or not to save
+
+Default write behavior:
+
+- For low-risk durable notes, Codex may update the wiki without asking first, then briefly mention what changed.
+- For ambiguous, sensitive, personal, or high-volume updates, Codex must ask before writing.
+- For conflicting claims, Codex must preserve the conflict explicitly instead of overwriting the older claim.
+- For early brainstorming, Codex should wait until decisions stabilize, then capture the decision and alternatives.
+- For repeated conversational work on the same topic, Codex should update existing pages rather than creating duplicate pages.
+
+This creates a "soft automatic" model: the plugin acts naturally and proactively, but it still respects user agency and avoids surprising writes.
 
 ## Skills
 
@@ -72,11 +108,13 @@ Primary always-on wiki maintainer workflow. It should:
 
 - detect or ask for the vault root only when it cannot infer one
 - read `AGENTS.md`, `AGENTS.llm-wiki.md`, `wiki/index.md`, and recent `wiki/log.md` entries when present
-- classify the user request as bootstrap, ingest, query, maintenance, or schema update
+- classify the user request or conversation state as bootstrap, ingest, query, maintenance, schema update, or ambient capture
+- monitor the active conversation for durable knowledge that should compound into the wiki
 - preserve raw sources as immutable input
 - write generated knowledge only into the wiki layer
 - maintain Obsidian wikilinks and Dataview-friendly frontmatter
 - append parseable log entries for meaningful operations
+- keep ambient capture updates concise and avoid interrupting the main task unless confirmation is needed
 
 ### `llm-wiki-bootstrap`
 
@@ -177,6 +215,16 @@ Maintenance:
 3. When asked, Codex repairs links, index entries, metadata, and stale summaries.
 4. Codex logs the maintenance pass.
 
+Ambient capture:
+
+1. User discusses a topic naturally without asking for a wiki operation.
+2. Codex detects durable knowledge using the ambient capture policy.
+3. Codex checks `wiki/index.md` and likely target pages.
+4. Codex updates an existing page or creates a focused page only when the knowledge is stable enough.
+5. Codex updates `wiki/index.md` when a page is created or materially changed.
+6. Codex appends a compact `wiki/log.md` entry for the capture.
+7. Codex returns to the main conversation with a short note such as "I also captured the finalized convention in `wiki/concepts/...`."
+
 ## Error Handling
 
 - If no vault is detected, ask for or infer a target directory before writing.
@@ -184,6 +232,8 @@ Maintenance:
 - If a raw source cannot be parsed, create a log entry only if meaningful work was completed.
 - If the wiki has conflicting claims, preserve both claims and mark the conflict instead of silently choosing one.
 - If a file has user-authored content in a wiki page, update conservatively and avoid deleting information unless the user asks.
+- If ambient capture would interrupt a time-sensitive coding task, defer the capture until the task has a natural pause.
+- If the user rejects an ambient capture suggestion, do not ask again for the same content.
 
 ## Testing And Verification
 
@@ -207,4 +257,3 @@ Minimum verification before completion:
 - hosted service or authentication
 
 These can be added later without changing the core plugin shape.
-
