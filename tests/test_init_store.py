@@ -82,10 +82,23 @@ class InitStoreTests(unittest.TestCase):
                 capture_output=True,
             )
             self.assertEqual(first.returncode, 0, first.stderr)
-            index = root / "memory" / "index.md"
-            custom_content = "custom generated file\n"
+            custom_config = json.dumps(
+                {
+                    "schemaVersion": "0.1",
+                    "backend": "markdown-files",
+                    "storeName": "Custom Memory",
+                },
+                indent=2,
+            ) + "\n"
+            custom_markdown = "# Custom generated file\n\nkeep this content\n"
+            custom_content_by_file = {
+                relative_path: custom_markdown
+                for relative_path in GENERATED_FILES
+                if relative_path.endswith(".md")
+            }
+            custom_content_by_file[".ltm-wiki/config.json"] = custom_config
             for relative_path in GENERATED_FILES:
-                (root / relative_path).write_text(custom_content, encoding="utf-8")
+                (root / relative_path).write_text(custom_content_by_file[relative_path], encoding="utf-8")
             second = subprocess.run(
                 [sys.executable, str(SCRIPT), str(root), "--backend", "markdown-files"],
                 text=True,
@@ -93,14 +106,23 @@ class InitStoreTests(unittest.TestCase):
             )
             self.assertEqual(second.returncode, 0, second.stderr)
             for relative_path in GENERATED_FILES:
-                self.assertEqual((root / relative_path).read_text(encoding="utf-8"), custom_content)
+                self.assertEqual(
+                    (root / relative_path).read_text(encoding="utf-8"),
+                    custom_content_by_file[relative_path],
+                )
             forced = subprocess.run(
                 [sys.executable, str(SCRIPT), str(root), "--backend", "markdown-files", "--force"],
                 text=True,
                 capture_output=True,
             )
             self.assertEqual(forced.returncode, 0, forced.stderr)
-            self.assertNotEqual(index.read_text(encoding="utf-8"), custom_content)
+            forced_config = json.loads((root / ".ltm-wiki" / "config.json").read_text(encoding="utf-8"))
+            self.assertNotEqual(forced_config["storeName"], "Custom Memory")
+            for relative_path in GENERATED_FILES:
+                self.assertNotEqual(
+                    (root / relative_path).read_text(encoding="utf-8"),
+                    custom_content_by_file[relative_path],
+                )
 
 
 if __name__ == "__main__":
