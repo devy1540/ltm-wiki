@@ -1,0 +1,48 @@
+{
+  "name": "ltm-wiki",
+  "version": "0.1.0",
+  "description": "AI-agent long-term memory wiki with portable markdown stores and an Obsidian backend.",
+  "author": {
+    "name": "hjyoon"
+  },
+  "homepage": "https://github.com/hjyoon/ltm-wiki",
+  "repository": "https://github.com/hjyoon/ltm-wiki",
+  "license": "MIT",
+  "keywords": [
+    "ltm",
+    "long-term-memory",
+    "agent-memory",
+    "wiki",
+    "pkm",
+    "markdown",
+    "obsidian",
+    "second-brain",
+    "knowledge-base",
+    "research"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "LTM Wiki",
+    "shortDescription": "Long-term memory wiki for AI agents",
+    "longDescription": "Use LTM Wiki to let AI agents remember, recall, consolidate, and maintain durable knowledge in user-owned memory stores. It ships with markdown-files and Obsidian storage backends plus Codex, Claude, and generic agent instructions.",
+    "developerName": "hjyoon",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Initialize an LTM Wiki memory store here.",
+      "Recall relevant long-term memory for this task.",
+      "Check this memory store for stale or broken entries."
+    ],
+    "websiteURL": "https://github.com/hjyoon/ltm-wiki",
+    "privacyPolicyURL": "https://github.com/hjyoon/ltm-wiki",
+    "termsOfServiceURL": "https://github.com/hjyoon/ltm-wiki",
+    "brandColor": "#2563EB",
+    "composerIcon": "",
+    "logo": "",
+    "screenshots": []
+  }
+}
