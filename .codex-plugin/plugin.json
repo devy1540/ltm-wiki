@@ -38,11 +38,8 @@
       "Check this memory store for stale or broken entries."
     ],
     "websiteURL": "https://github.com/devy1540/ltm-wiki",
-    "privacyPolicyURL": "https://github.com/devy1540/ltm-wiki",
-    "termsOfServiceURL": "https://github.com/devy1540/ltm-wiki",
-    "brandColor": "#2563EB",
-    "composerIcon": "",
-    "logo": "",
-    "screenshots": []
+    "privacyPolicyURL": "https://github.com/devy1540/ltm-wiki/blob/main/PRIVACY.md",
+    "termsOfServiceURL": "https://github.com/devy1540/ltm-wiki/blob/main/TERMS.md",
+    "brandColor": "#2563EB"
   }
 }
