@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "description": "AI-agent long-term memory wiki with portable markdown stores and an Obsidian backend.",
   "author": {
-    "name": "hjyoon"
+    "name": "devy1540"
   },
-  "homepage": "https://github.com/hjyoon/ltm-wiki",
-  "repository": "https://github.com/hjyoon/ltm-wiki",
+  "homepage": "https://github.com/devy1540/ltm-wiki",
+  "repository": "https://github.com/devy1540/ltm-wiki",
   "license": "MIT",
   "keywords": [
     "ltm",
@@ -25,7 +25,7 @@
     "displayName": "LTM Wiki",
     "shortDescription": "Long-term memory wiki for AI agents",
     "longDescription": "Use LTM Wiki to let AI agents remember, recall, consolidate, and maintain durable knowledge in user-owned memory stores. It ships with markdown-files and Obsidian storage backends plus Codex, Claude, and generic agent instructions.",
-    "developerName": "hjyoon",
+    "developerName": "devy1540",
     "category": "Productivity",
     "capabilities": [
       "Interactive",
@@ -37,9 +37,9 @@
       "Recall relevant long-term memory for this task.",
       "Check this memory store for stale or broken entries."
     ],
-    "websiteURL": "https://github.com/hjyoon/ltm-wiki",
-    "privacyPolicyURL": "https://github.com/hjyoon/ltm-wiki",
-    "termsOfServiceURL": "https://github.com/hjyoon/ltm-wiki",
+    "websiteURL": "https://github.com/devy1540/ltm-wiki",
+    "privacyPolicyURL": "https://github.com/devy1540/ltm-wiki",
+    "termsOfServiceURL": "https://github.com/devy1540/ltm-wiki",
     "brandColor": "#2563EB",
     "composerIcon": "",
     "logo": "",
