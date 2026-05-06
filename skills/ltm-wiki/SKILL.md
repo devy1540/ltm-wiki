@@ -10,13 +10,14 @@ Use LTM Wiki as explicit user-owned long-term memory for AI agents.
 ## Workflow
 
 1. Detect the memory store root. Prefer the current workspace when `.ltm-wiki/config.json` exists.
-2. If no store exists and the user is asking for memory work, use `ltm-wiki-bootstrap`.
-3. Read `.ltm-wiki/config.json`, `memory/index.md`, and recent `memory/log.md` entries.
-4. Classify the request as recall, ingest, ambient capture, maintenance, query, or schema update.
-5. Use the selected backend's link and metadata conventions.
-6. Preserve `raw/` unless the user explicitly asks to add or import a source.
-7. Write durable agent-maintained knowledge under `memory/`.
-8. Append meaningful operations to `memory/log.md`.
+2. If no store exists and the user is asking to install, download, configure, or set up LTM Wiki, use `ltm-setup`.
+3. If no store exists and the user only needs a bare memory store initialized, use `ltm-wiki-bootstrap`.
+4. Read `.ltm-wiki/config.json`, `memory/index.md`, and recent `memory/log.md` entries.
+5. Classify the request as recall, ingest, ambient capture, maintenance, query, or schema update.
+6. Use the selected backend's link and metadata conventions.
+7. Preserve `raw/` unless the user explicitly asks to add or import a source.
+8. Write durable agent-maintained knowledge under `memory/`.
+9. Append meaningful operations to `memory/log.md`.
 
 ## Ambient Capture
 

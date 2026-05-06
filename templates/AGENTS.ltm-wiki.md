@@ -2,6 +2,10 @@
 
 Use LTM Wiki as explicit user-owned long-term memory.
 
+## Setup
+
+When the user invokes `$ltm-setup` or asks naturally to set up LTM Wiki, initialize long-term memory, connect AI memory, configure an Obsidian memory store, or says "ltm-wiki 초기셋팅", follow the `ltm-setup` workflow.
+
 ## Before Acting
 
 Check memory when the current request relates to an existing project, preference, open loop, source-backed topic, or repeated workflow.

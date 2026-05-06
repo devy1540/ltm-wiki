@@ -33,7 +33,7 @@
       "Write"
     ],
     "defaultPrompt": [
-      "Initialize an LTM Wiki memory store here.",
+      "$ltm-setup",
       "Recall relevant long-term memory for this task.",
       "Check this memory store for stale or broken entries."
     ],
