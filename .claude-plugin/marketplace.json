@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "AI-agent long-term memory wiki — pure markdown skills, no external runtime.",
-    "version": "0.4.0"
+    "version": "0.5.0"
   },
   "plugins": [
     {
       "name": "ltm-wiki",
       "source": "./",
       "description": "Long-term memory wiki for AI agents: one user-owned store reachable from every session via a global pointer, with git/Obsidian backends. No external runtime.",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "author": {
         "name": "devy1540"
       },

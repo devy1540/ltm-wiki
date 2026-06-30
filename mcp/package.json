@@ -1,0 +1,25 @@
+{
+  "name": "ltm-wiki-mcp",
+  "version": "0.5.0",
+  "description": "Optional MCP server exposing the LTM Wiki memory store (read/write) over stdio.",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "ltm-wiki-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "yaml": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  }
+}
