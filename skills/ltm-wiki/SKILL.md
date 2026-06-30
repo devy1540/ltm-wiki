@@ -33,10 +33,15 @@ Recall, ingest, ambient capture, maintenance, query, or schema update.
 
 ## Write Durable Knowledge
 
-- Follow the backend's link and metadata conventions (relative links for
+Follow `meta/conventions.md` for naming, deduplication, indexing, and recall.
+
+- **Check for duplicates first**: `grep -ril "<topic>" <store>/memory`; update an
+  existing page instead of duplicating.
+- Name the file with a short kebab-case slug under the matching `memory/<category>/`.
+- Write with complete frontmatter and the backend's links (relative for
   `markdown-files`, wikilinks for `obsidian`). Full spec: `meta/store-structure.md`.
+- **Update `memory/index.md`**: add a link under the matching area for notable pages.
 - Preserve `raw/` unless the user explicitly asks to add or import a source.
-- Write agent-maintained knowledge under `memory/` with complete frontmatter.
 - Append meaningful operations to `memory/log.md`.
 - If `sync` is `git`, commit after durable writes; push when the user asks.
 
@@ -44,5 +49,9 @@ Recall, ingest, ambient capture, maintenance, query, or schema update.
 
 Capture stable and useful knowledge without requiring the user to say "save this"
 when it is low-risk. Ask first for sensitive, personal, ambiguous, or high-volume
-writes. Never store secrets, credentials, private keys, tokens, or content the
-user says not to remember.
+writes.
+
+**Scan content for secrets before writing** — API keys, tokens, passwords,
+private keys, connection strings (`AKIA…`, `sk-…`, `-----BEGIN … KEY-----`, etc.).
+Redact or omit any match. Never store secrets, credentials, or content the user
+says not to remember.

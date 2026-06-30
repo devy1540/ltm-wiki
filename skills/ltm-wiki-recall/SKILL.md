@@ -13,11 +13,14 @@ built-in grep tools.
 1. Resolve the store: local `.ltm-wiki/config.json`, else `defaultStore` from
    `~/.ltm-wiki/config.json`. If `sync: git`, pull first.
 2. Read `memory/index.md` and recent `memory/log.md` entries.
-3. Search targeted memory with grep / ripgrep, for example:
-   - `grep -rin "<term>" <store>/memory`
-   - `rg -n "<term1>|<term2>" <store>/memory` (when ripgrep is available)
+3. Search targeted memory, narrowing by frontmatter first (full ranking in
+   `meta/conventions.md`):
+   - Filter by type when known: `grep -rl "type: preference" <store>/memory`
+   - Then search terms inside: `grep -rin "<term>" <store>/memory`
+   - Or one pass: `rg -n "<term1>|<term2>" <store>/memory` (when ripgrep is available)
 
-   Rank pages by hit count and relevance; open the smallest useful set.
+   Rank by status (`active` first), type/tag match, confidence, then recency.
+   Open the smallest useful set.
 4. Distinguish current conversation context from recalled memory.
 5. Mention recalled memory only when it materially affects the response or
    transparency is useful.
