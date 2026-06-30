@@ -43,6 +43,16 @@ Resolve the store, then check in order and collect issues:
 - Append maintenance operations to `memory/log.md`. If `sync` is `git`, commit
   when done (push when the user asks).
 
+## Curation
+
+Keep memory trustworthy as it ages (policy: `meta/conventions.md` → Curation Policy):
+
+- **Confidence decay** — lower the confidence of `active` pages left unreviewed
+  past their horizon (high→medium ~180d, medium→low ~180d more) and flag them for
+  re-confirmation. Re-confirming resets `last_reviewed`.
+- **Contradictions** — if two active pages on the same topic disagree, surface
+  both, keep the user-confirmed one, and archive the other.
+
 ## Consolidation
 
 Periodically fold raw episodic notes into durable pages:

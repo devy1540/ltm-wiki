@@ -1,0 +1,46 @@
+name: doctor
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  doctor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate plugin & marketplace JSON
+        run: |
+          for f in .codex-plugin/plugin.json .claude-plugin/plugin.json .claude-plugin/marketplace.json; do
+            jq . "$f" >/dev/null && echo "OK  $f"
+          done
+
+      - name: Skills must have frontmatter
+        run: |
+          fail=0
+          for f in skills/*/SKILL.md; do
+            head -1 "$f" | grep -q '^---' || { echo "MISSING frontmatter: $f"; fail=1; }
+          done
+          [ "$fail" = 0 ] && echo "all skills OK"
+          exit $fail
+
+      - name: No external-runtime references in skills/meta/storage-backends
+        run: |
+          if grep -rniE 'python3 |init_store|search_memory|memory_doctor' skills meta storage-backends; then
+            echo "external-runtime reference found"; exit 1
+          fi
+          echo "clean"
+
+      - name: Broken relative markdown links in meta & docs
+        run: |
+          fail=0
+          while IFS= read -r f; do
+            grep -oE '\]\(([^)]+\.md)\)' "$f" | sed -E 's/^\]\(//; s/\)$//' | while read -r t; do
+              case "$t" in http*|mailto*) continue;; esac
+              d=$(dirname "$f")
+              [ -f "$d/$t" ] || echo "broken link in $f -> $t"
+            done
+          done < <(find meta README.md -name '*.md' 2>/dev/null)
+          echo "link check done"

@@ -20,9 +20,12 @@ built-in grep tools.
    - Or one pass: `rg -n "<term1>|<term2>" <store>/memory` (when ripgrep is available)
 
    Rank by status (`active` first), type/tag match, confidence, then recency.
-   Open the smallest useful set.
-4. Distinguish current conversation context from recalled memory.
-5. Mention recalled memory only when it materially affects the response or
+4. Expand by links and tags (1 hop): for the top pages, follow their
+   `[[wikilinks]]` and shared tags to surface directly related memory
+   (`grep -ril "<tag>" <store>/memory`; open linked slugs). Keep the set small.
+   See `meta/conventions.md` → Associative Recall.
+5. Distinguish current conversation context from recalled memory.
+6. Mention recalled memory only when it materially affects the response or
    transparency is useful.
-6. Update memory when the conversation resolves or changes durable context, then
+7. Update memory when the conversation resolves or changes durable context, then
    append to `memory/log.md`.
