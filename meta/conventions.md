@@ -49,3 +49,27 @@ When recalling, prefer pages in this order:
 
 Open the smallest useful set; cite a memory only when it materially affects the
 answer.
+
+## Associative Recall (1 hop)
+
+After the first-pass hits, expand once along relationships to catch related memory
+that keyword search alone misses:
+
+- **Links** — open pages referenced by `[[wikilinks]]` in the top hits, and pages
+  that link back to them.
+- **Tags** — pull siblings sharing a tag: `grep -ril "<tag>" <store>/memory`.
+- Stop at one hop; rank the expanded set the same way and keep only what helps.
+
+## Curation Policy
+
+Keep stored memory trustworthy as it ages:
+
+- **Confidence decay** — an `active` page left unreviewed past its horizon loses
+  one confidence step and is flagged for re-confirmation. Suggested: `high`→`medium`
+  after ~180 days, `medium`→`low` after ~180 more. Re-confirming resets
+  `last_reviewed` and restores confidence.
+- **Contradictions** — two `active` pages on the same topic must not assert
+  opposite facts. On conflict, surface both, keep the user-confirmed one, and
+  `archive` (not delete) the other.
+- **Consolidation** — prefer one durable page over many episodic notes (see the
+  maintenance skill's Consolidation steps).

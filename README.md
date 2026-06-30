@@ -90,6 +90,7 @@ global pointer, and installs the entry points you want.
 - `meta/global-config.md` — global pointer specification.
 - `meta/conventions.md` — naming, deduplication, indexing, and recall ranking.
 - `meta/obsidian-queries.md` — ready-made Dataview views for the vault.
+- `meta/migration.md` — schema version migration guide.
 - `storage-backends/` — backend conventions and sync notes.
 - `hooks/` — optional sync / reminder hooks (not required).
 - `.codex-plugin/plugin.json` — Codex plugin manifest.
