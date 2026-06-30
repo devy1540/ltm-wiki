@@ -1,74 +1,83 @@
 # LTM Wiki
 
-LTM Wiki is an AI-agent-agnostic long-term memory wiki. It gives agents an explicit, user-owned memory store for durable knowledge from conversations, sources, decisions, preferences, procedures, and open questions.
+LTM Wiki is an AI-agent-agnostic long-term memory wiki. It gives agents one
+user-owned memory store that is reachable from **every session, project, and
+environment** — with **no external runtime**. Pure markdown, driven by skills.
 
 `ltm` means long-term memory.
 
 ## What It Does
 
-- Remembers durable context without requiring the user to say "save this" every time.
+- Remembers durable context without requiring you to say "save this" every time.
 - Recalls relevant memory before answering when prior context matters.
-- Stores memory in user-owned files.
-- Supports multiple storage backends.
-- Ships with a Codex plugin adapter plus Claude and generic AI instruction templates.
+- Keeps memory in user-owned files you can open in any editor.
+- Reaches the same store from any session through a global pointer.
+- Lets you choose how the store syncs: Git, Obsidian, or none.
+
+## How It Stays Reachable Everywhere
+
+Memory **data** and memory **tooling** are separated and joined by one global
+pointer:
+
+```
+Global entry points (installed once per agent, load in every session)
+  Claude Code : ~/.claude/skills/  +  block in ~/.claude/CLAUDE.md
+  Codex       : block in ~/.codex/AGENTS.md
+  Generic     : AI_MEMORY.md in the project
+        |
+        v  reads
+Global pointer  ~/.ltm-wiki/config.json   (store path + sync mode)
+        |
+        v  points to
+Memory store (single source of truth)  ~/ltm-wiki | Obsidian vault | fixed path
+        synced by Git remote or Obsidian Sync
+```
+
+No Python, no per-session install, no `git clone` at runtime. Recall is `grep`;
+health checks are a checklist (see `skills/ltm-wiki-maintenance`).
 
 ## Storage Backends
 
-- `markdown-files`: default portable backend.
-- `obsidian`: markdown backend optimized for Obsidian wikilinks, graph view, and Dataview-friendly metadata.
+- `markdown-files` (default): portable plain markdown, synced via Git.
+- `obsidian`: wikilinks, graph view, Dataview-friendly metadata, synced via
+  Obsidian Sync / iCloud.
 
-## Download And Setup
+## Setup
 
-```bash
-git clone https://github.com/devy1540/ltm-wiki.git
-cd ltm-wiki
-python3 scripts/setup.py ./my-memory --agent codex --backend markdown-files --store-name "My Memory"
-```
-
-For all agent instruction templates:
-
-```bash
-python3 scripts/setup.py ./my-memory --agent all --backend markdown-files --store-name "My Memory"
-```
-
-For Obsidian:
-
-```bash
-python3 scripts/setup.py /path/to/obsidian-vault --agent all --backend obsidian --store-name "My Memory"
-```
-
-The setup command initializes the memory store, installs agent instruction entry points, and runs the memory doctor.
-
-## Agent Commands
+Install the skills once — as a plugin, or by copying `skills/` into your agent's
+global skills directory — then trigger setup:
 
 - Codex: `$ltm-setup`
 - Claude: `/ltm-setup`
 - Generic AI: `ltm-setup`
 
-Natural-language setup requests should work too, for example:
+Natural-language requests work too:
 
 - "ltm-wiki 초기셋팅하고 싶어"
 - "장기기억 저장소 만들어줘"
 - "Obsidian으로 AI memory 연결해줘"
 
-## Initialize A Store
+Setup asks for the store location and sync mode, creates the store, writes the
+global pointer, and installs the entry points you want.
 
-```bash
-python3 scripts/init_store.py ./my-memory --backend markdown-files --store-name "My Memory"
-python3 scripts/memory_doctor.py ./my-memory
-python3 scripts/search_memory.py ./my-memory "project preference"
-```
+## How An Agent Uses It
 
-## Codex Plugin
+1. Resolve the store: local `.ltm-wiki/config.json`, else `defaultStore` from
+   `~/.ltm-wiki/config.json`.
+2. If `sync: git`, pull.
+3. Recall (grep `memory/`), answer, capture durable knowledge, append to
+   `memory/log.md`.
+4. If `sync: git`, commit (push on request).
 
-The repository root contains `.codex-plugin/plugin.json` and `skills/`, so it can be installed as a Codex plugin.
+## Repository Layout
 
-## Agent Instructions
-
-- Codex: `templates/AGENTS.ltm-wiki.md`
-- Claude: `templates/CLAUDE.ltm-wiki.md`
-- Generic: `templates/AI_MEMORY.md`
-- Shared setup command: `templates/commands/ltm-setup.md`
+- `skills/` — five skills: `ltm-wiki` (router), `ltm-setup`,
+  `ltm-wiki-bootstrap`, `ltm-wiki-recall`, `ltm-wiki-maintenance`.
+- `entrypoints/` — global entry-point blocks for Claude, Codex, and generic agents.
+- `meta/store-structure.md` — canonical store layout, frontmatter, and seed files.
+- `meta/global-config.md` — global pointer specification.
+- `storage-backends/` — backend conventions and sync notes.
+- `.codex-plugin/plugin.json` — Codex plugin manifest.
 
 ## Memory Lifecycle
 
@@ -78,4 +87,5 @@ Observe -> Triage -> Store -> Link -> Recall -> Consolidate -> Prune
 
 ## Safety
 
-LTM Wiki should not store secrets, credentials, private keys, tokens, or content the user says not to remember.
+LTM Wiki must not store secrets, credentials, private keys, tokens, or content the
+user says not to remember.
