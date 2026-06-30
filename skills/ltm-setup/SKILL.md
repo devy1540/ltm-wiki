@@ -5,39 +5,65 @@ description: Use when the user invokes $ltm-setup or asks to download, install, 
 
 # LTM Setup
 
-Set up LTM Wiki from either `$ltm-setup` or a natural-language setup request.
+Set up LTM Wiki so one memory store is reachable from every session, with no
+external runtime. Triggered by `$ltm-setup`, `/ltm-setup`, or a natural-language
+setup request.
 
-## Workflow
+## 1. Choose Store Location And Sync (ask the user)
 
-1. Choose the memory root:
-   - Use the current workspace by default.
-   - Use an Obsidian vault when the user asks for Obsidian.
-2. Choose backend:
-   - Use `markdown-files` by default.
-   - Use `obsidian` for Obsidian contexts.
-3. Locate, download, or update LTM Wiki:
+Offer these options:
 
-```bash
-if [ -f scripts/setup.py ]; then
-  LTM_WIKI_HOME="$(pwd)"
-else
-  LTM_WIKI_HOME="${LTM_WIKI_HOME:-$HOME/.local/share/ltm-wiki}"
-  if [ -d "$LTM_WIKI_HOME/.git" ]; then
-    git -C "$LTM_WIKI_HOME" pull --ff-only
-  else
-    git clone https://github.com/devy1540/ltm-wiki.git "$LTM_WIKI_HOME"
-  fi
-fi
+- **Home path + Git** — store at `~/ltm-wiki`, a git repo with a remote;
+  reachable across machines. `sync: git`, backend `markdown-files`.
+- **Obsidian Vault** — store inside a new or existing Obsidian vault; replicated
+  by Obsidian Sync / iCloud. `sync: obsidian`, backend `obsidian`.
+- **Fixed path, no sync yet** — one local path on this machine. `sync: none`,
+  backend `markdown-files`. Can be upgraded to Git later.
+
+Default to **Home path + Git** when the user does not specify.
+
+## 2. Create The Store
+
+Create the structure with the `ltm-wiki-bootstrap` workflow (directories + seed
+files per `meta/store-structure.md`), setting `backend` to match step 1. If
+`sync: git` and the path is not a repo yet, `git init`, and offer to set the
+remote (do not push without the user's consent).
+
+## 3. Write The Global Pointer
+
+Write `~/.ltm-wiki/config.json` (spec: `meta/global-config.md`):
+
+```json
+{
+  "schemaVersion": "0.2",
+  "defaultStore": "<absolute store path>",
+  "backend": "<markdown-files|obsidian>",
+  "sync": "<git|obsidian|none>"
+}
 ```
 
-4. Run setup:
+This single file is what makes the store reachable from any directory. Overwrite
+it in place; never duplicate or append.
 
-```bash
-python3 "$LTM_WIKI_HOME/scripts/setup.py" <memory-root> --agent codex --backend <backend> --store-name "LTM Wiki"
-```
+## 4. Install Entry Points (for each agent the user wants)
 
-Use `--agent all` when the user wants Codex, Claude, and generic AI instructions installed together.
+- **Claude Code** — make the skills load in every session: install LTM Wiki as a
+  plugin, or copy this repo's `skills/` into `~/.claude/skills/`. Then add the
+  block from `entrypoints/claude/CLAUDE.block.md` to `~/.claude/CLAUDE.md`.
+- **Codex** — add the block from `entrypoints/codex/AGENTS.block.md` to
+  `~/.codex/AGENTS.md`.
+- **Generic / Cursor** — place `entrypoints/generic/AI_MEMORY.md` in the target
+  project (or the agent's global rules location).
 
-5. Confirm the memory root, backend, installed files, and `doctor=ok`.
+All entry-point edits are **idempotent**: each block is wrapped in
+`<!-- ltm-wiki:begin -->` / `<!-- ltm-wiki:end -->` markers. If the markers
+already exist, replace the content between them instead of appending a second copy.
 
-Never store secrets, credentials, private keys, tokens, or content the user says not to remember.
+## 5. Confirm
+
+Report the store path, backend, sync mode, that the global pointer was written,
+which entry points were installed, and the result of the `ltm-wiki-maintenance`
+checklist.
+
+Never store secrets, credentials, private keys, tokens, or content the user says
+not to remember.

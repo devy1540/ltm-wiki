@@ -5,14 +5,21 @@ description: Use when the user asks to remember, recall, use previous context, c
 
 # LTM Wiki Recall
 
-Recall targeted long-term memory before answering.
+Recall targeted long-term memory before answering. No script — search with your
+built-in grep tools.
 
 ## Workflow
 
-1. Read `.ltm-wiki/config.json`.
-2. Read `memory/index.md` and recent `memory/log.md`.
-3. Search targeted memory with `python3 scripts/search_memory.py <root> "<query>"`.
-4. Open the smallest useful set of memory pages.
-5. Distinguish current conversation context from recalled memory.
-6. Mention recalled memory only when it materially affects the response or transparency is useful.
-7. Update memory when the conversation resolves or changes durable context.
+1. Resolve the store: local `.ltm-wiki/config.json`, else `defaultStore` from
+   `~/.ltm-wiki/config.json`. If `sync: git`, pull first.
+2. Read `memory/index.md` and recent `memory/log.md` entries.
+3. Search targeted memory with grep / ripgrep, for example:
+   - `grep -rin "<term>" <store>/memory`
+   - `rg -n "<term1>|<term2>" <store>/memory` (when ripgrep is available)
+
+   Rank pages by hit count and relevance; open the smallest useful set.
+4. Distinguish current conversation context from recalled memory.
+5. Mention recalled memory only when it materially affects the response or
+   transparency is useful.
+6. Update memory when the conversation resolves or changes durable context, then
+   append to `memory/log.md`.

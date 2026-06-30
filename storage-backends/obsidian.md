@@ -1,6 +1,7 @@
 # Obsidian Backend
 
-The `obsidian` backend stores LTM Wiki memory as Obsidian-compatible markdown.
+The `obsidian` backend stores LTM Wiki memory as Obsidian-compatible markdown. The
+store is a normal vault — open `<store>` directly in Obsidian.
 
 ## Link Style
 
@@ -15,7 +16,7 @@ Use relative markdown links for raw source files and assets.
 
 ## Metadata
 
-Use YAML frontmatter compatible with Dataview:
+Use YAML frontmatter compatible with Dataview (full schema: `meta/store-structure.md`):
 
 ```yaml
 ---
@@ -32,6 +33,17 @@ provenance: user-stated
 last_reviewed: 2026-05-04
 ---
 ```
+
+## Recommended Vault Settings
+
+- Set the attachment folder to `raw/assets`.
+- Use graph view to review memory clusters and orphan pages.
+- Use Dataview to query frontmatter when the Dataview plugin is installed.
+
+## Sync
+
+`sync: obsidian` — replication is handled by Obsidian Sync, iCloud, or your chosen
+mechanism. No git actions are required.
 
 ## Human Review
 
