@@ -1,0 +1,36 @@
+{
+  "name": "ltm-wiki",
+  "owner": {
+    "name": "devy1540"
+  },
+  "metadata": {
+    "description": "AI-agent long-term memory wiki — pure markdown skills, no external runtime.",
+    "version": "0.2.0"
+  },
+  "plugins": [
+    {
+      "name": "ltm-wiki",
+      "source": "./",
+      "description": "Long-term memory wiki for AI agents: one user-owned store reachable from every session via a global pointer, with git/Obsidian backends. No external runtime.",
+      "version": "0.2.0",
+      "author": {
+        "name": "devy1540"
+      },
+      "homepage": "https://github.com/devy1540/ltm-wiki",
+      "repository": "https://github.com/devy1540/ltm-wiki",
+      "license": "MIT",
+      "category": "productivity",
+      "keywords": [
+        "ltm",
+        "long-term-memory",
+        "agent-memory",
+        "wiki",
+        "pkm",
+        "markdown",
+        "obsidian",
+        "second-brain",
+        "knowledge-base"
+      ]
+    }
+  ]
+}
