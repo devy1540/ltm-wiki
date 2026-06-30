@@ -44,8 +44,20 @@ health checks are a checklist (see `skills/ltm-wiki-maintenance`).
 
 ## Setup
 
-Install the skills once — as a plugin, or by copying `skills/` into your agent's
-global skills directory — then trigger setup:
+### Install once
+
+- **Claude Code** — add the marketplace, then install the plugin:
+  ```
+  /plugin marketplace add devy1540/ltm-wiki
+  /plugin install ltm-wiki@ltm-wiki
+  ```
+  Or copy `skills/` into `~/.claude/skills/`.
+- **Codex** — install as a Codex plugin, or add the block from
+  `entrypoints/codex/AGENTS.block.md` to `~/.codex/AGENTS.md`.
+
+### Run setup
+
+Trigger setup from your agent:
 
 - Codex: `$ltm-setup`
 - Claude: `/ltm-setup`
