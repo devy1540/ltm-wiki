@@ -44,3 +44,17 @@ jobs:
             done
           done < <(find meta README.md -name '*.md' 2>/dev/null)
           echo "link check done"
+
+  mcp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Build optional MCP server
+        run: |
+          cd mcp
+          npm install --no-audit --no-fund
+          npm run build
+          echo "mcp build OK"

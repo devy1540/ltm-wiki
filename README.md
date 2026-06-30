@@ -93,7 +93,15 @@ global pointer, and installs the entry points you want.
 - `meta/migration.md` — schema version migration guide.
 - `storage-backends/` — backend conventions and sync notes.
 - `hooks/` — optional sync / reminder hooks (not required).
+- `mcp/` — optional MCP server (opt-in; not part of the default install).
 - `.codex-plugin/plugin.json` — Codex plugin manifest.
+
+## Optional MCP Server
+
+For clients that can't read the store files directly, an **opt-in** MCP server in
+`mcp/` exposes the same memory over stdio (read/write). It is not part of the
+default install and the plugin manifests don't register it — you turn it on
+yourself. Local stdio only. See `mcp/README.md`.
 
 ## Memory Lifecycle
 
