@@ -38,7 +38,10 @@ last_reviewed: 2026-05-04
 
 - Set the attachment folder to `raw/assets`.
 - Use graph view to review memory clusters and orphan pages.
-- Use Dataview to query frontmatter when the Dataview plugin is installed.
+- Install the Dataview plugin and use the ready-made views in
+  `meta/obsidian-queries.md` (active-by-type, open loops, needs-review, stale).
+- Daily notes: jot quick captures in the daily note, then promote the durable
+  ones into `memory/<category>/` with full frontmatter (see `meta/conventions.md`).
 
 ## Sync
 

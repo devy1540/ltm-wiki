@@ -1,6 +1,6 @@
 {
   "name": "ltm-wiki",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "AI-agent long-term memory wiki. No external runtime: pure markdown skills with a global pointer and git/Obsidian backends.",
   "author": {
     "name": "devy1540"

@@ -88,7 +88,10 @@ global pointer, and installs the entry points you want.
 - `entrypoints/` — global entry-point blocks for Claude, Codex, and generic agents.
 - `meta/store-structure.md` — canonical store layout, frontmatter, and seed files.
 - `meta/global-config.md` — global pointer specification.
+- `meta/conventions.md` — naming, deduplication, indexing, and recall ranking.
+- `meta/obsidian-queries.md` — ready-made Dataview views for the vault.
 - `storage-backends/` — backend conventions and sync notes.
+- `hooks/` — optional sync / reminder hooks (not required).
 - `.codex-plugin/plugin.json` — Codex plugin manifest.
 
 ## Memory Lifecycle
