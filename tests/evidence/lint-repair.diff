@@ -1,0 +1,23 @@
+diff -ru tests/fixtures/basic-project/lint-seed/wiki/index.md tests/fixtures/basic-project/lint-repaired/wiki/index.md
+--- tests/fixtures/basic-project/lint-seed/wiki/index.md	2026-08-24 15:49:05
++++ tests/fixtures/basic-project/lint-repaired/wiki/index.md	2026-08-24 15:49:05
+@@ -11,7 +11,6 @@
+ ## Topics
+ 
+ - [Transport](topics/transport.md) — Current transport decisions and proposals.
+-- [Broken topic](topics/does-not-exist.md) — Intentionally broken lint fixture.
+ 
+ ## Syntheses
+ 
+diff -ru tests/fixtures/basic-project/lint-seed/wiki/operations.md tests/fixtures/basic-project/lint-repaired/wiki/operations.md
+--- tests/fixtures/basic-project/lint-seed/wiki/operations.md	2026-08-24 15:48:25
++++ tests/fixtures/basic-project/lint-repaired/wiki/operations.md	2026-08-24 15:49:05
+@@ -35,3 +35,8 @@
+ - Created: wiki/syntheses/transport-comparison.md
+ - Updated: wiki/index.md
+ - Result: preserved the approved public-client and internal-service transport comparison with its current-claim evidence chain.
++
++## 2026-08-24 | repair | wiki/index.md
++
++- Updated: removed broken link to `topics/does-not-exist.md`
++- Result: repaired approved finding LWM-ML-002

@@ -1,0 +1,116 @@
+diff -ru tests/fixtures/basic-project/baseline/wiki/index.md tests/fixtures/basic-project/golden/wiki/index.md
+--- tests/fixtures/basic-project/baseline/wiki/index.md	2026-08-24 14:44:26
++++ tests/fixtures/basic-project/golden/wiki/index.md	2026-08-24 15:14:48
+@@ -2,8 +2,15 @@
+ 
+ ## Source Notes
+ 
++- [Architecture v1](source-notes/architecture-v1.md) — Initial public-transport policy.
++- [Protocol Review](source-notes/protocol-review.md) — Unapproved gRPC-default recommendation.
++- [Architecture v2](source-notes/architecture-v2.md) — Approved public and internal transport policy.
++- [Operational Notes](source-notes/operational-notes.md) — Transport rollout ownership and scope limits.
++
+ ## Topics
+ 
+ - [Transport](topics/transport.md) — Current transport decisions and proposals.
+ 
+ ## Syntheses
++
++- [Supported Transport Comparison](syntheses/transport-comparison.md) — Approved public-client and internal-service transport comparison.
+diff -ru tests/fixtures/basic-project/baseline/wiki/operations.md tests/fixtures/basic-project/golden/wiki/operations.md
+--- tests/fixtures/basic-project/baseline/wiki/operations.md	2026-08-24 14:44:26
++++ tests/fixtures/basic-project/golden/wiki/operations.md	2026-08-24 15:14:48
+@@ -1 +1,37 @@
+ # Wiki Operations
++
++## 2026-08-24 | ingest | sources/architecture-v1.md
++
++- Created: wiki/source-notes/architecture-v1.md
++- Updated: wiki/topics/transport.md, wiki/index.md
++- Result: recorded the public HTTP policy and reconciled it against no prior topic claim.
++
++## 2026-08-24 | ingest | sources/protocol-review.md
++
++- Created: wiki/source-notes/protocol-review.md
++- Updated: wiki/topics/transport.md, wiki/index.md
++- Result: recorded an unapproved gRPC-default recommendation as disputed against the public HTTP policy.
++
++## 2026-08-24 | ingest | sources/architecture-v2.md
++
++- Created: wiki/source-notes/architecture-v2.md
++- Updated: wiki/topics/transport.md, wiki/index.md
++- Result: reconciled the approved public and internal policy; superseded the gRPC-default recommendation.
++
++## 2026-08-24 | ingest | sources/operational-notes.md
++
++- Created: wiki/source-notes/operational-notes.md
++- Updated: wiki/topics/transport.md, wiki/index.md
++- Result: recorded transport rollout ownership; no upload-size limit was added because the source defines none.
++
++## 2026-08-24 | ingest | sources/architecture-v2.md
++
++- Created: none
++- Updated: none
++- Result: no-op; the source path and SHA-256 digest already matched the existing source note, and its linked topic claims still exist.
++
++## 2026-08-24 | crystallize | transport comparison
++
++- Created: wiki/syntheses/transport-comparison.md
++- Updated: wiki/index.md
++- Result: preserved the approved public-client and internal-service transport comparison with its current-claim evidence chain.
+Only in tests/fixtures/basic-project/golden/wiki: source-notes
+Only in tests/fixtures/basic-project/golden/wiki: syntheses
+diff -ru tests/fixtures/basic-project/baseline/wiki/topics/transport.md tests/fixtures/basic-project/golden/wiki/topics/transport.md
+--- tests/fixtures/basic-project/baseline/wiki/topics/transport.md	2026-08-24 14:44:26
++++ tests/fixtures/basic-project/golden/wiki/topics/transport.md	2026-08-24 15:18:47
+@@ -7,3 +7,50 @@
+ 
+ This topic exists before source ingestion and must be reconciled rather than
+ replaced by a new duplicate page.
++
++<a id="claim-transport-public-http"></a>
++### Claim: transport-public-http
++
++- **Kind:** sourced
++- **State:** current
++- **Statement:** Public client integrations use HTTP with JSON payloads.
++- **Evidence:**
++  - **Source:** [Architecture v1](../../sources/architecture-v1.md)
++  - **Locator:** heading "Public transport", lines 5-8
++  - **Source:** [Architecture v2](../../sources/architecture-v2.md)
++  - **Locator:** heading "Approved decision", lines 5-9
++- **Contradicts:** [transport-all-new-grpc](#claim-transport-all-new-grpc)
++- **Supersedes:** [transport-all-new-grpc](#claim-transport-all-new-grpc)
++
++<a id="claim-transport-all-new-grpc"></a>
++### Claim: transport-all-new-grpc
++
++- **Kind:** sourced
++- **State:** superseded
++- **Statement:** gRPC should be the default transport for every new public and internal integration.
++- **Evidence:**
++  - **Source:** [Protocol Review](../../sources/protocol-review.md)
++  - **Locator:** heading "Recommendation", lines 5-9
++- **Contradicts:** [transport-public-http](#claim-transport-public-http)
++- **Superseded by:** [transport-public-http](#claim-transport-public-http) and [transport-internal-grpc](#claim-transport-internal-grpc), the approved Architecture v2 decision.
++
++<a id="claim-transport-internal-grpc"></a>
++### Claim: transport-internal-grpc
++
++- **Kind:** sourced
++- **State:** current
++- **Statement:** Controlled internal high-throughput services may use gRPC.
++- **Evidence:**
++  - **Source:** [Architecture v2](../../sources/architecture-v2.md)
++  - **Locator:** heading "Approved decision", lines 5-9
++- **Supersedes:** [transport-all-new-grpc](#claim-transport-all-new-grpc)
++
++<a id="claim-transport-rollout-owner"></a>
++### Claim: transport-rollout-owner
++
++- **Kind:** sourced
++- **State:** current
++- **Statement:** The platform team owns the transport migration checklist.
++- **Evidence:**
++  - **Source:** [Operational Notes](../../sources/operational-notes.md)
++  - **Locator:** heading "Rollout ownership", lines 5-8

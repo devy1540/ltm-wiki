@@ -1,0 +1,79 @@
+diff -ruN 01-architecture-v1/wiki/index.md 02-protocol-review/wiki/index.md
+--- 01-architecture-v1/wiki/index.md	2026-08-24 15:51:37
++++ 02-protocol-review/wiki/index.md	2026-08-24 15:52:40
+@@ -3,6 +3,7 @@
+ ## Source Notes
+ 
+ - [Architecture v1](source-notes/architecture-v1.md) — Public transport decision and internal experimentation boundary.
++- [Protocol Review](source-notes/protocol-review.md) — Unapproved gRPC-default recommendation for new integrations.
+ 
+ ## Topics
+ 
+diff -ruN 01-architecture-v1/wiki/operations.md 02-protocol-review/wiki/operations.md
+--- 01-architecture-v1/wiki/operations.md	2026-08-24 15:51:37
++++ 02-protocol-review/wiki/operations.md	2026-08-24 15:52:40
+@@ -5,3 +5,9 @@
+ - Created: wiki/source-notes/architecture-v1.md
+ - Updated: wiki/topics/transport.md, wiki/index.md
+ - Result: recorded two current sourced transport claims
++
++## 2026-08-24 | ingest | sources/protocol-review.md
++
++- Created: wiki/source-notes/protocol-review.md
++- Updated: wiki/topics/transport.md, wiki/index.md
++- Result: recorded one disputed recommendation and preserved its conflict with the public HTTP claim
+diff -ruN 01-architecture-v1/wiki/source-notes/protocol-review.md 02-protocol-review/wiki/source-notes/protocol-review.md
+--- 01-architecture-v1/wiki/source-notes/protocol-review.md	1970-01-01 09:00:00
++++ 02-protocol-review/wiki/source-notes/protocol-review.md	2026-08-24 15:52:40
+@@ -0,0 +1,19 @@
++---
++title: Protocol Review
++type: source-note
++source_path: sources/protocol-review.md
++source_digest: sha256:1f107df04edccb5972d1ee8913ac927f5fe6f7c96a3b3a1305f275be64c1aa36
++---
++
++# Protocol Review
++
++This source recommends gRPC as the default transport for new public and internal
++integrations, while stating that the recommendation is not an approved architecture
++decision.
++
++## Important assertions
++
++- The review recommends gRPC as the default transport for every new public and
++  internal integration, but the recommendation is not approved as an architecture
++  decision (heading "Recommendation", lines 5-9). Reconciled in
++  [transport-grpc-default-recommendation](../topics/transport.md#claim-transport-grpc-default-recommendation).
+diff -ruN 01-architecture-v1/wiki/topics/transport.md 02-protocol-review/wiki/topics/transport.md
+--- 01-architecture-v1/wiki/topics/transport.md	2026-08-24 15:51:37
++++ 02-protocol-review/wiki/topics/transport.md	2026-08-24 15:52:40
+@@ -12,11 +12,12 @@
+ ### Claim: transport-public-http-json
+ 
+ - **Kind:** sourced
+-- **State:** current
++- **State:** disputed
+ - **Statement:** Public client integrations use HTTP with JSON payloads.
+ - **Evidence:**
+   - **Source:** [Architecture v1](../../sources/architecture-v1.md)
+   - **Locator:** heading "Public transport", lines 5-8
++- **Contradicts:** [transport-grpc-default-recommendation](#claim-transport-grpc-default-recommendation)
+ 
+ <a id="claim-transport-internal-grpc-experiment-not-default"></a>
+ ### Claim: transport-internal-grpc-experiment-not-default
+@@ -27,3 +28,14 @@
+ - **Evidence:**
+   - **Source:** [Architecture v1](../../sources/architecture-v1.md)
+   - **Locator:** heading "Internal experimentation", lines 10-13
++
++<a id="claim-transport-grpc-default-recommendation"></a>
++### Claim: transport-grpc-default-recommendation
++
++- **Kind:** sourced
++- **State:** disputed
++- **Statement:** The protocol review recommends gRPC as the default transport for every new public and internal integration, but the recommendation is not approved as an architecture decision.
++- **Evidence:**
++  - **Source:** [Protocol Review](../../sources/protocol-review.md)
++  - **Locator:** heading "Recommendation", lines 5-9
++- **Contradicts:** [transport-public-http-json](#claim-transport-public-http-json)

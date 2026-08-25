@@ -1,115 +1,113 @@
-# LTM Wiki
+# LLM Wiki
 
-LTM Wiki is an AI-agent-agnostic long-term memory wiki. It gives agents one
-user-owned memory store that is reachable from **every session, project, and
-environment** — with **no external runtime**. Pure markdown, driven by skills.
+> Status: automatic project-Wiki MVP. The previous LTM Wiki implementation was
+> removed so this project could restart from a clear LLM Wiki product boundary.
 
-`ltm` means long-term memory.
+LLM Wiki is a local knowledge base that an LLM builds and maintains from sources
+chosen by the user. The LLM turns those sources into linked, source-backed
+Markdown pages and keeps the resulting wiki current over time.
 
-## What It Does
+## The Problem
 
-- Remembers durable context without requiring you to say "save this" every time.
-- Recalls relevant memory before answering when prior context matters.
-- Keeps memory in user-owned files you can open in any editor.
-- Reaches the same store from any session through a global pointer.
-- Lets you choose how the store syncs: Git, Obsidian, or none.
+Documents and useful conversations accumulate, but their connections and
+conclusions do not. A conventional retrieval system searches the raw material
+again for every question. A manually maintained wiki becomes expensive to keep
+consistent.
 
-## How It Stays Reachable Everywhere
+LLM Wiki addresses this by preserving the result of knowledge work as a durable,
+inspectable artifact that improves as sources and questions accumulate.
 
-Memory **data** and memory **tooling** are separated and joined by one global
-pointer:
+## Core Model
 
-```
-Global entry points (installed once per agent, load in every session)
-  Claude Code : ~/.claude/skills/  +  block in ~/.claude/CLAUDE.md
-  Codex       : block in ~/.codex/AGENTS.md
-  Generic     : AI_MEMORY.md in the project
-        |
-        v  reads
-Global pointer  ~/.ltm-wiki/config.json   (store path + sync mode)
-        |
-        v  points to
-Memory store (single source of truth)  ~/ltm-wiki | Obsidian vault | fixed path
-        synced by Git remote or Obsidian Sync
-```
+- **Raw sources** are selected and owned by the user. The LLM reads but does not
+  rewrite them.
+- **Wiki pages** are derived knowledge maintained by the LLM: source summaries,
+  entities, concepts, comparisons, syntheses, and answered questions.
+- **Schema** defines how the LLM ingests sources, cites evidence, updates pages,
+  handles contradictions, and checks wiki health.
 
-No Python, no per-session install, no `git clone` at runtime. Recall is `grep`;
-health checks are a checklist (see `skills/ltm-wiki-maintenance`).
+The core operations are project resolution, `ingest`, `query`, `crystallize`,
+and `lint`.
 
-## Storage Backends
+## What Using It Feels Like
 
-- `markdown-files` (default): portable plain markdown, synced via Git.
-- `obsidian`: wikilinks, graph view, Dataview-friendly metadata, synced via
-  Obsidian Sync / iCloud.
+Install the LTM Wiki plugin or `llm-wiki` skill once, then work normally in a
+project. No separate Wiki setup command is required.
 
-## Setup
+1. At the beginning of project work, the skill resolves the current project's
+   Wiki before continuing the original task.
+2. If the machine has one accessible Obsidian Vault, it is selected once and a
+   project Wiki is created automatically under
+   `LLM Wiki/projects/<project-name>--<identity-hash>/`.
+3. If several Vaults are available, the agent asks which one to use once. The
+   choice is stored in machine-local configuration and reused.
+4. Each project gets an isolated Wiki. Git worktrees and equivalent Git remotes
+   resolve to the same project Wiki; unrelated projects do not share knowledge.
+5. A file is added as evidence only when the user explicitly asks to add or
+   ingest it. Ordinary conversations and files used during normal work are not
+   captured.
 
-### Install once
+The Wiki and imported source snapshots are normal files inside the chosen Vault,
+so Obsidian Sync may synchronize them if that Vault is configured for sync. The
+machine-local project registry is kept outside the Vault.
 
-- **Claude Code** — add the marketplace, then install the plugin:
-  ```
-  /plugin marketplace add devy1540/ltm-wiki
-  /plugin install ltm-wiki@ltm-wiki
-  ```
-  Or copy `skills/` into `~/.claude/skills/`.
-- **Codex** — install as a Codex plugin, or add the block from
-  `entrypoints/codex/AGENTS.block.md` to `~/.codex/AGENTS.md`.
+Explicit prompts such as “add this design document to the project Wiki” or
+“check the Wiki for the previous decision” remain available, but `$llm-wiki` is
+not required for normal matching requests.
 
-### Run setup
+Automatic startup uses Codex's implicit skill matching, not an always-running
+hook or background watcher. The skill metadata asks Codex to activate it at the
+beginning of project work; explicit `$llm-wiki` remains a fallback on hosts that
+do not support or select implicit skills.
 
-Trigger setup from your agent:
+## Product Boundary
 
-- Codex: `$ltm-setup`
-- Claude: `/ltm-setup`
-- Generic AI: `ltm-setup`
+LLM Wiki is not a general-purpose agent-memory system and does not automatically
+save every conversation or user detail. Agent memory, search indexes, background
+automation, and MCP integrations may be added later as optional layers only when
+their need is demonstrated.
 
-Natural-language requests work too:
+The initial product definition is in
+[`docs/product-definition.md`](docs/product-definition.md).
+The concrete MVP behavior is in
+[`docs/mvp-scenarios.md`](docs/mvp-scenarios.md).
 
-- "ltm-wiki 초기셋팅하고 싶어"
-- "장기기억 저장소 만들어줘"
-- "Obsidian으로 AI memory 연결해줘"
+## Current Implementation
 
-Setup asks for the store location and sync mode, creates the store, writes the
-global pointer, and installs the entry points you want.
+The implementation is a skills-only Codex plugin:
 
-## How An Agent Uses It
+- [`.codex-plugin/plugin.json`](.codex-plugin/plugin.json) packages the repository
+  for plugin distribution without an MCP server.
+- [`skills/llm-wiki/SKILL.md`](skills/llm-wiki/SKILL.md) routes automatic project
+  resolution, setup, ingest, query, crystallize, and lint requests.
+- Its bundled Python scripts discover a configured Obsidian Vault, create an
+  isolated project skeleton, and safely import explicitly selected external
+  source files.
+- Its references define the storage model and operation-specific workflows; its
+  assets contain the seed files used to initialize a Wiki.
 
-1. Resolve the store: local `.ltm-wiki/config.json`, else `defaultStore` from
-   `~/.ltm-wiki/config.json`.
-2. If `sync: git`, pull.
-3. Recall (grep `memory/`), answer, capture durable knowledge, append to
-   `memory/log.md`.
-4. If `sync: git`, commit (push on request).
+The runtime requirement is Python 3.10 or newer using only the standard library.
+The core does not require third-party Python packages, an MCP server, database,
+embedding model, background process, or hosted service.
 
-## Repository Layout
+Codex also discovers the same skill directly from the repository-standard
+`.agents/skills/` compatibility link during development. After installing or
+updating the plugin, start a new Codex task so the skill is loaded.
 
-- `skills/` — five skills: `ltm-wiki` (router), `ltm-setup`,
-  `ltm-wiki-bootstrap`, `ltm-wiki-recall`, `ltm-wiki-maintenance`.
-- `entrypoints/` — global entry-point blocks for Claude, Codex, and generic agents.
-- `meta/store-structure.md` — canonical store layout, frontmatter, and seed files.
-- `meta/global-config.md` — global pointer specification.
-- `meta/conventions.md` — naming, deduplication, indexing, and recall ranking.
-- `meta/obsidian-queries.md` — ready-made Dataview views for the vault.
-- `meta/migration.md` — schema version migration guide.
-- `storage-backends/` — backend conventions and sync notes.
-- `hooks/` — optional sync / reminder hooks (not required).
-- `mcp/` — optional MCP server (opt-in; not part of the default install).
-- `.codex-plugin/plugin.json` — Codex plugin manifest.
+## Verification
 
-## Optional MCP Server
+`sh tests/verify-repository.sh` validates the plugin and skill packages, automatic
+project isolation, immutable source importing, source hashes, golden Wiki
+contracts, source replacement behavior, and source-path boundaries. CI also runs
+the Agent Skills reference validator against `skills/llm-wiki`.
 
-For clients that can't read the store files directly, an **opt-in** MCP server in
-`mcp/` exposes the same memory over stdio (read/write). It is not part of the
-default install and the plugin manifests don't register it — you turn it on
-yourself. Local stdio only. See `mcp/README.md`.
+These are deterministic static checks. Semantic behavior—whether evidence really
+supports a claim or a synthesis is accurate—is evaluated with the workflow in
+[`tests/acceptance.md`](tests/acceptance.md). Sanitized results from the current
+independent forward tests are recorded in
+[`tests/evidence/2026-08-24-forward-tests.md`](tests/evidence/2026-08-24-forward-tests.md).
 
-## Memory Lifecycle
+## Origin
 
-```text
-Observe -> Triage -> Store -> Link -> Recall -> Consolidate -> Prune
-```
-
-## Safety
-
-LTM Wiki must not store secrets, credentials, private keys, tokens, or content the
-user says not to remember.
+This project is an implementation of the
+[LLM Wiki pattern proposed by Andrej Karpathy](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).

@@ -1,0 +1,72 @@
+diff -ruN 06-query-readonly/wiki/index.md 07-crystallized/wiki/index.md
+--- 06-query-readonly/wiki/index.md	2026-08-24 15:59:26
++++ 07-crystallized/wiki/index.md	2026-08-24 16:01:12
+@@ -13,3 +13,5 @@
+ - [Rollout Ownership](topics/rollout-ownership.md) — Transport rollout responsibilities and documented policy scope.
+ 
+ ## Syntheses
++
++- [Approved Transport Usage](syntheses/approved-transport-usage.md) — Approved public HTTP and conditional internal gRPC comparison.
+diff -ruN 06-query-readonly/wiki/operations.md 07-crystallized/wiki/operations.md
+--- 06-query-readonly/wiki/operations.md	2026-08-24 15:59:26
++++ 07-crystallized/wiki/operations.md	2026-08-24 16:01:12
+@@ -27,3 +27,9 @@
+ ## 2026-08-24 | ingest | sources/architecture-v2.md
+ 
+ - Result: no-op; the existing source note digest and referenced topic evidence already match this source
++
++## 2026-08-24 | crystallize | wiki/syntheses/approved-transport-usage.md
++
++- Created: wiki/syntheses/approved-transport-usage.md
++- Updated: wiki/topics/transport.md, wiki/index.md
++- Result: preserved the approved public HTTP and conditional internal gRPC comparison with source evidence and limitations
+diff -ruN 06-query-readonly/wiki/syntheses/approved-transport-usage.md 07-crystallized/wiki/syntheses/approved-transport-usage.md
+--- 06-query-readonly/wiki/syntheses/approved-transport-usage.md	1970-01-01 09:00:00
++++ 07-crystallized/wiki/syntheses/approved-transport-usage.md	2026-08-24 16:01:12
+@@ -0,0 +1,31 @@
++---
++title: Approved Transport Usage
++type: synthesis
++---
++
++# Approved Transport Usage
++
++<a id="claim-approved-transport-usage"></a>
++### Claim: approved-transport-usage
++
++- **Kind:** derived
++- **State:** current
++- **Statement:** The approved transport comparison is HTTP with JSON for public client integrations, while gRPC is permitted only for internal high-throughput services when both endpoints are controlled by the team.
++- **Derived from:**
++  - [transport-public-http-json](../topics/transport.md#claim-transport-public-http-json)
++  - [transport-internal-controlled-grpc](../topics/transport.md#claim-transport-internal-controlled-grpc)
++- **Evidence:**
++  - **Source:** [Architecture v1](../../sources/architecture-v1.md)
++  - **Locator:** heading "Public transport", lines 5-8
++  - **Source:** [Architecture v2](../../sources/architecture-v2.md)
++  - **Locator:** heading "Approved decision", lines 5-12
++
++## Limitations
++
++- The internal gRPC statement is a conditional permission, not a requirement to use
++  gRPC for every internal service.
++- The historical [gRPC-default recommendation](../topics/transport.md#claim-transport-grpc-default-recommendation)
++  remains visible as superseded and retains its contradiction relation with the
++  public HTTP claim.
++- This comparison does not establish file-upload size limits or retention policies;
++  the available operational source does not define them.
+diff -ruN 06-query-readonly/wiki/topics/transport.md 07-crystallized/wiki/topics/transport.md
+--- 06-query-readonly/wiki/topics/transport.md	2026-08-24 15:59:26
++++ 07-crystallized/wiki/topics/transport.md	2026-08-24 16:01:12
+@@ -14,6 +14,11 @@
+   migration checklist ownership and client teams' public HTTP compatibility testing
+   ownership.
+ 
++## Related syntheses
++
++- [Approved Transport Usage](../syntheses/approved-transport-usage.md) compares
++  the approved public HTTP and conditional internal gRPC use.
++
+ <a id="claim-transport-public-http-json"></a>
+ ### Claim: transport-public-http-json
+ 

@@ -1,0 +1,90 @@
+diff -ru tests/fixtures/source-replacement/baseline/wiki/operations.md tests/fixtures/source-replacement/golden/wiki/operations.md
+--- tests/fixtures/source-replacement/baseline/wiki/operations.md	2026-08-24 15:38:23
++++ tests/fixtures/source-replacement/golden/wiki/operations.md	2026-08-24 15:38:23
+@@ -4,3 +4,21 @@
+ 
+ - Created: sources/, wiki/source-notes/, wiki/topics/, wiki/syntheses/
+ - Result: initialized the source-replacement baseline
++
++## 2026-08-24 | ingest | sources/policy.md
++
++- Updated: wiki/source-notes/policy.md, wiki/topics/client-policy.md, wiki/syntheses/client-request-behavior.md
++- Source replacement: sha256:1e5a4a8b80c727eec7905a96f8a122914d14fffb4f3b3dd1e11845eb700b5d9e -> sha256:9b721fb2d9dfe360bdc38283e54ac3677962c040f6f9b4bbae63e1052cc0cf61
++- Removed evidence: `claim-client-timeout-30-seconds` no longer has heading "Timeout", lines 3-5 support.
++- **Former evidence:**
++  - **Source:** [Client Policy](../sources/policy.md)
++  - **Digest:** sha256:1e5a4a8b80c727eec7905a96f8a122914d14fffb4f3b3dd1e11845eb700b5d9e
++  - **Locator:** heading "Timeout", lines 3-5
++- Claim transitions: `claim-client-timeout-30-seconds` current -> stale; `claim-client-request-behavior` current -> stale.
++- Result: rewrote the existing source note with the replacement's ownership guidance and retained removed timeout evidence as historical context.
++
++## 2026-08-24 | ingest | sources/policy.md
++
++- Created: none
++- Updated: none
++- Result: no-op; the source path and SHA-256 digest already matched the existing source note, and its linked topic claims still exist.
+diff -ru tests/fixtures/source-replacement/baseline/wiki/source-notes/policy.md tests/fixtures/source-replacement/golden/wiki/source-notes/policy.md
+--- tests/fixtures/source-replacement/baseline/wiki/source-notes/policy.md	2026-08-24 15:15:47
++++ tests/fixtures/source-replacement/golden/wiki/source-notes/policy.md	2026-08-24 15:24:52
+@@ -2,14 +2,15 @@
+ title: Client Policy
+ type: source-note
+ source_path: sources/policy.md
+-source_digest: sha256:1e5a4a8b80c727eec7905a96f8a122914d14fffb4f3b3dd1e11845eb700b5d9e
++source_digest: sha256:9b721fb2d9dfe360bdc38283e54ac3677962c040f6f9b4bbae63e1052cc0cf61
+ ---
+ 
+ # Client Policy
+ 
+-This version defines a 30-second request timeout and assigns timeout guidance to
+-the platform team.
++This version assigns client reliability guidance to the platform team and
++explicitly removes the previous numeric request-timeout rule without defining a
++replacement timeout.
+ 
+ ## Important assertions
+ 
+-- Clients use a 30-second timeout ([Client Policy claim](../topics/client-policy.md#claim-client-timeout-30-seconds)); heading "Timeout", lines 3-5.
++- The platform team owns client reliability guidance ([Client Policy claim](../topics/client-policy.md#claim-client-reliability-guidance-ownership)); heading "Ownership", lines 3-8.
+diff -ru tests/fixtures/source-replacement/baseline/wiki/syntheses/client-request-behavior.md tests/fixtures/source-replacement/golden/wiki/syntheses/client-request-behavior.md
+--- tests/fixtures/source-replacement/baseline/wiki/syntheses/client-request-behavior.md	2026-08-24 15:15:47
++++ tests/fixtures/source-replacement/golden/wiki/syntheses/client-request-behavior.md	2026-08-24 15:24:52
+@@ -9,9 +9,10 @@
+ ### Claim: client-request-behavior
+ 
+ - **Kind:** derived
+-- **State:** current
++- **State:** stale
+ - **Statement:** Client requests should fail after 30 seconds.
+-- **Evidence:**
++- **Former evidence:**
+   - **Source:** [Client Policy](../../sources/policy.md)
++  - **Digest:** sha256:1e5a4a8b80c727eec7905a96f8a122914d14fffb4f3b3dd1e11845eb700b5d9e
+   - **Locator:** heading "Timeout", lines 3-5
+ - **Derived from:** [client-timeout-30-seconds](../topics/client-policy.md#claim-client-timeout-30-seconds)
+diff -ru tests/fixtures/source-replacement/baseline/wiki/topics/client-policy.md tests/fixtures/source-replacement/golden/wiki/topics/client-policy.md
+--- tests/fixtures/source-replacement/baseline/wiki/topics/client-policy.md	2026-08-24 15:15:47
++++ tests/fixtures/source-replacement/golden/wiki/topics/client-policy.md	2026-08-24 15:24:52
+@@ -9,8 +9,20 @@
+ ### Claim: client-timeout-30-seconds
+ 
+ - **Kind:** sourced
+-- **State:** current
++- **State:** stale
+ - **Statement:** Clients must use a 30-second request timeout.
+-- **Evidence:**
++- **Former evidence:**
+   - **Source:** [Client Policy](../../sources/policy.md)
++  - **Digest:** sha256:1e5a4a8b80c727eec7905a96f8a122914d14fffb4f3b3dd1e11845eb700b5d9e
+   - **Locator:** heading "Timeout", lines 3-5
++- **Reason:** The replacement at the same source path does not support a numeric request-timeout rule.
++
++<a id="claim-client-reliability-guidance-ownership"></a>
++### Claim: client-reliability-guidance-ownership
++
++- **Kind:** sourced
++- **State:** current
++- **Statement:** The platform team owns client reliability guidance.
++- **Evidence:**
++  - **Source:** [Client Policy](../../sources/policy.md)
++  - **Locator:** heading "Ownership", lines 3-8

@@ -1,0 +1,115 @@
+diff -ruN 03-architecture-v2/wiki/index.md 04-operational-notes/wiki/index.md
+--- 03-architecture-v2/wiki/index.md	2026-08-24 15:55:00
++++ 04-operational-notes/wiki/index.md	2026-08-24 15:57:10
+@@ -4,10 +4,12 @@
+ 
+ - [Architecture v1](source-notes/architecture-v1.md) — Public transport decision and internal experimentation boundary.
+ - [Architecture v2](source-notes/architecture-v2.md) — Approved public HTTP and constrained internal gRPC decision.
++- [Operational Notes](source-notes/operational-notes.md) — Rollout ownership and documented policy gaps.
+ - [Protocol Review](source-notes/protocol-review.md) — Unapproved gRPC-default recommendation for new integrations.
+ 
+ ## Topics
+ 
+ - [Transport](topics/transport.md) — Current transport decisions and proposals.
++- [Rollout Ownership](topics/rollout-ownership.md) — Transport rollout responsibilities and documented policy scope.
+ 
+ ## Syntheses
+diff -ruN 03-architecture-v2/wiki/operations.md 04-operational-notes/wiki/operations.md
+--- 03-architecture-v2/wiki/operations.md	2026-08-24 15:55:00
++++ 04-operational-notes/wiki/operations.md	2026-08-24 15:57:10
+@@ -17,3 +17,9 @@
+ - Created: wiki/source-notes/architecture-v2.md
+ - Updated: wiki/topics/transport.md, wiki/index.md
+ - Result: preserved the historical public-transport contradiction, superseded the global gRPC recommendation, and recorded constrained internal gRPC use
++
++## 2026-08-24 | ingest | sources/operational-notes.md
++
++- Created: wiki/source-notes/operational-notes.md, wiki/topics/rollout-ownership.md
++- Updated: wiki/index.md, wiki/topics/transport.md
++- Result: recorded rollout ownership and the source's upload-size and retention-policy gap without assigning a value
+diff -ruN 03-architecture-v2/wiki/source-notes/operational-notes.md 04-operational-notes/wiki/source-notes/operational-notes.md
+--- 03-architecture-v2/wiki/source-notes/operational-notes.md	1970-01-01 09:00:00
++++ 04-operational-notes/wiki/source-notes/operational-notes.md	2026-08-24 15:57:10
+@@ -0,0 +1,26 @@
++---
++title: Operational Notes
++type: source-note
++source_path: sources/operational-notes.md
++source_digest: sha256:df5e33731ef83d38d9e6c988125a613786872ab9e477416edde0232022aab4f3
++---
++
++# Operational Notes
++
++This source assigns the transport migration checklist to the platform team and
++public HTTP compatibility testing to client teams.
++
++## Important assertions
++
++- The platform team owns the transport migration checklist (heading "Rollout
++  ownership", lines 5-8). Reconciled in
++  [rollout-ownership-platform-transport-migration-checklist](../topics/rollout-ownership.md#claim-rollout-ownership-platform-transport-migration-checklist).
++- Client teams own public HTTP compatibility testing (heading "Rollout ownership",
++  lines 5-8). Reconciled in
++  [rollout-ownership-client-public-http-compatibility-testing](../topics/rollout-ownership.md#claim-rollout-ownership-client-public-http-compatibility-testing).
++
++## Scope gap
++
++- This source does not define file-upload size limits or retention policies (lines
++  10-10). Reconciled in
++  [rollout-ownership-upload-retention-unspecified](../topics/rollout-ownership.md#claim-rollout-ownership-upload-retention-unspecified).
+diff -ruN 03-architecture-v2/wiki/topics/rollout-ownership.md 04-operational-notes/wiki/topics/rollout-ownership.md
+--- 03-architecture-v2/wiki/topics/rollout-ownership.md	1970-01-01 09:00:00
++++ 04-operational-notes/wiki/topics/rollout-ownership.md	2026-08-24 15:57:10
+@@ -0,0 +1,36 @@
++---
++title: Rollout Ownership
++type: topic
++---
++
++# Rollout Ownership
++
++<a id="claim-rollout-ownership-platform-transport-migration-checklist"></a>
++### Claim: rollout-ownership-platform-transport-migration-checklist
++
++- **Kind:** sourced
++- **State:** current
++- **Statement:** The platform team owns the transport migration checklist.
++- **Evidence:**
++  - **Source:** [Operational Notes](../../sources/operational-notes.md)
++  - **Locator:** heading "Rollout ownership", lines 5-8
++
++<a id="claim-rollout-ownership-client-public-http-compatibility-testing"></a>
++### Claim: rollout-ownership-client-public-http-compatibility-testing
++
++- **Kind:** sourced
++- **State:** current
++- **Statement:** Client teams own public HTTP compatibility testing.
++- **Evidence:**
++  - **Source:** [Operational Notes](../../sources/operational-notes.md)
++  - **Locator:** heading "Rollout ownership", lines 5-8
++
++<a id="claim-rollout-ownership-upload-retention-unspecified"></a>
++### Claim: rollout-ownership-upload-retention-unspecified
++
++- **Kind:** sourced
++- **State:** current
++- **Statement:** Operational Notes does not define file-upload size limits or retention policies.
++- **Evidence:**
++  - **Source:** [Operational Notes](../../sources/operational-notes.md)
++  - **Locator:** lines 10-10
+diff -ruN 03-architecture-v2/wiki/topics/transport.md 04-operational-notes/wiki/topics/transport.md
+--- 03-architecture-v2/wiki/topics/transport.md	2026-08-24 15:55:00
++++ 04-operational-notes/wiki/topics/transport.md	2026-08-24 15:57:10
+@@ -8,6 +8,12 @@
+ This topic exists before source ingestion and must be reconciled rather than
+ replaced by a new duplicate page.
+ 
++## Related topics
++
++- [Rollout Ownership](rollout-ownership.md) records the platform team's transport
++  migration checklist ownership and client teams' public HTTP compatibility testing
++  ownership.
++
+ <a id="claim-transport-public-http-json"></a>
+ ### Claim: transport-public-http-json
+ 

@@ -1,0 +1,7 @@
+interface:
+  display_name: "LLM Wiki"
+  short_description: "Automatic source-backed project Wikis in Obsidian"
+  default_prompt: "Use $llm-wiki to resolve this project's Obsidian Wiki and continue the task."
+
+policy:
+  allow_implicit_invocation: true

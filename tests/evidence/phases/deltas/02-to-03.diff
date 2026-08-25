@@ -1,0 +1,97 @@
+diff -ruN 02-protocol-review/wiki/index.md 03-architecture-v2/wiki/index.md
+--- 02-protocol-review/wiki/index.md	2026-08-24 15:52:40
++++ 03-architecture-v2/wiki/index.md	2026-08-24 15:55:00
+@@ -3,6 +3,7 @@
+ ## Source Notes
+ 
+ - [Architecture v1](source-notes/architecture-v1.md) — Public transport decision and internal experimentation boundary.
++- [Architecture v2](source-notes/architecture-v2.md) — Approved public HTTP and constrained internal gRPC decision.
+ - [Protocol Review](source-notes/protocol-review.md) — Unapproved gRPC-default recommendation for new integrations.
+ 
+ ## Topics
+diff -ruN 02-protocol-review/wiki/operations.md 03-architecture-v2/wiki/operations.md
+--- 02-protocol-review/wiki/operations.md	2026-08-24 15:52:40
++++ 03-architecture-v2/wiki/operations.md	2026-08-24 15:55:00
+@@ -11,3 +11,9 @@
+ - Created: wiki/source-notes/protocol-review.md
+ - Updated: wiki/topics/transport.md, wiki/index.md
+ - Result: recorded one disputed recommendation and preserved its conflict with the public HTTP claim
++
++## 2026-08-24 | ingest | sources/architecture-v2.md
++
++- Created: wiki/source-notes/architecture-v2.md
++- Updated: wiki/topics/transport.md, wiki/index.md
++- Result: preserved the historical public-transport contradiction, superseded the global gRPC recommendation, and recorded constrained internal gRPC use
+diff -ruN 02-protocol-review/wiki/source-notes/architecture-v2.md 03-architecture-v2/wiki/source-notes/architecture-v2.md
+--- 02-protocol-review/wiki/source-notes/architecture-v2.md	1970-01-01 09:00:00
++++ 03-architecture-v2/wiki/source-notes/architecture-v2.md	2026-08-24 15:55:00
+@@ -0,0 +1,23 @@
++---
++title: Architecture v2
++type: source-note
++source_path: sources/architecture-v2.md
++source_digest: sha256:fbea0a54c9380276ae4b929d75667c228c86cdb34d26d3d28b1f088a1831a68c
++---
++
++# Architecture v2
++
++This approved decision continues HTTP with JSON payloads for public client
++integrations and permits gRPC only for internal high-throughput services with
++team-controlled endpoints. It explicitly supersedes the Protocol Review's global
++gRPC-default recommendation.
++
++## Important assertions
++
++- Public client integrations continue to use HTTP with JSON payloads; this approved
++  decision supersedes the Protocol Review recommendation for gRPC as the default
++  transport (heading "Approved decision", lines 5-12). Reconciled in
++  [transport-public-http-json](../topics/transport.md#claim-transport-public-http-json).
++- Internal high-throughput services may use gRPC when both endpoints are controlled
++  by the team (heading "Approved decision", lines 5-9). Reconciled in
++  [transport-internal-controlled-grpc](../topics/transport.md#claim-transport-internal-controlled-grpc).
+diff -ruN 02-protocol-review/wiki/topics/transport.md 03-architecture-v2/wiki/topics/transport.md
+--- 02-protocol-review/wiki/topics/transport.md	2026-08-24 15:52:40
++++ 03-architecture-v2/wiki/topics/transport.md	2026-08-24 15:55:00
+@@ -12,12 +12,15 @@
+ ### Claim: transport-public-http-json
+ 
+ - **Kind:** sourced
+-- **State:** disputed
++- **State:** current
+ - **Statement:** Public client integrations use HTTP with JSON payloads.
+ - **Evidence:**
+   - **Source:** [Architecture v1](../../sources/architecture-v1.md)
+   - **Locator:** heading "Public transport", lines 5-8
++  - **Source:** [Architecture v2](../../sources/architecture-v2.md)
++  - **Locator:** heading "Approved decision", lines 5-12
+ - **Contradicts:** [transport-grpc-default-recommendation](#claim-transport-grpc-default-recommendation)
++- **Supersedes:** [transport-grpc-default-recommendation](#claim-transport-grpc-default-recommendation)
+ 
+ <a id="claim-transport-internal-grpc-experiment-not-default"></a>
+ ### Claim: transport-internal-grpc-experiment-not-default
+@@ -29,13 +32,24 @@
+   - **Source:** [Architecture v1](../../sources/architecture-v1.md)
+   - **Locator:** heading "Internal experimentation", lines 10-13
+ 
++<a id="claim-transport-internal-controlled-grpc"></a>
++### Claim: transport-internal-controlled-grpc
++
++- **Kind:** sourced
++- **State:** current
++- **Statement:** Internal high-throughput services may use gRPC when both endpoints are controlled by the team.
++- **Evidence:**
++  - **Source:** [Architecture v2](../../sources/architecture-v2.md)
++  - **Locator:** heading "Approved decision", lines 5-9
++
+ <a id="claim-transport-grpc-default-recommendation"></a>
+ ### Claim: transport-grpc-default-recommendation
+ 
+ - **Kind:** sourced
+-- **State:** disputed
++- **State:** superseded
+ - **Statement:** The protocol review recommends gRPC as the default transport for every new public and internal integration, but the recommendation is not approved as an architecture decision.
+ - **Evidence:**
+   - **Source:** [Protocol Review](../../sources/protocol-review.md)
+   - **Locator:** heading "Recommendation", lines 5-9
+ - **Contradicts:** [transport-public-http-json](#claim-transport-public-http-json)
++- **Superseded by:** [transport-public-http-json](#claim-transport-public-http-json)
