@@ -147,6 +147,8 @@ verify_diff() {
   right=$2
   retained=$3
   generated=$(mktemp)
+  normalized_generated=$(mktemp)
+  normalized_retained=$(mktemp)
   if diff -ru "$left" "$right" > "$generated"; then
     echo "expected fixture differences but found none: $left -> $right" >&2
     exit 1
@@ -154,10 +156,15 @@ verify_diff() {
     code=$?
     [ "$code" -eq 1 ] || exit "$code"
   fi
-  cmp -s "$generated" "$retained" || {
+  sed -E 's/^((---|\+\+\+) [^[:space:]]+)[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}.*$/\1/' \
+    "$generated" > "$normalized_generated"
+  sed -E 's/^((---|\+\+\+) [^[:space:]]+)[[:space:]]+[0-9]{4}-[0-9]{2}-[0-9]{2}.*$/\1/' \
+    "$retained" > "$normalized_retained"
+  cmp -s "$normalized_generated" "$normalized_retained" || {
     echo "retained diff is stale: $retained" >&2
     exit 1
   }
+  rm -f "$generated" "$normalized_generated" "$normalized_retained"
 }
 
 verify_diff "$fixture/baseline/wiki" "$fixture/golden/wiki" tests/evidence/basic-flow.diff

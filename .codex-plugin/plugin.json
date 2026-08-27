@@ -1,6 +1,6 @@
 {
   "name": "ltm-wiki",
-  "version": "0.6.0",
+  "version": "0.0.1",
   "description": "Automatically provision and maintain project-scoped, source-backed LLM Wikis inside an Obsidian Vault.",
   "author": {
     "name": "devy1540"

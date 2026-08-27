@@ -13,6 +13,7 @@ class PluginPackageTests(unittest.TestCase):
     def test_manifest_points_to_canonical_skill_package(self):
         manifest = json.loads((ROOT / ".codex-plugin/plugin.json").read_text())
         self.assertEqual(manifest["name"], "ltm-wiki")
+        self.assertEqual(manifest["version"], "0.0.1")
         self.assertRegex(manifest["version"], r"^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$")
         self.assertEqual(manifest["skills"], "./skills/")
         self.assertNotIn("mcpServers", manifest)
